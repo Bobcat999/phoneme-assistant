@@ -6,6 +6,7 @@ import numpy as np
 import IPython.display as ipd
 import accuracy_metrics as am
 import re
+import librosa
 
 ds = SpeechDatasetLoader()
 #%%
@@ -13,11 +14,15 @@ from phoneme_extractor import PhonemeExtractor
 extractor = PhonemeExtractor()
 # %%
 
-def process_index(index):
+def process_index(index, audio_file=None):
     # Transcribe the audio file
     sample = ds.train[index]
-    audio_array = sample["audio"]["array"]
-    sampling_rate = sample["audio"]["sampling_rate"]
+    if audio_file is not None:
+        audio_array, sampling_rate = librosa.load(audio_file)
+        sampling_rate = 16000
+    else:
+        audio_array = sample["audio"]["array"]
+        sampling_rate = sample["audio"]["sampling_rate"]
 
     ipd.display(ipd.Audio(data=audio_array, rate=sampling_rate))
 
@@ -31,11 +36,14 @@ def process_index(index):
     chars_to_remove = "ː0123"
     for char in chars_to_remove:
         filtered_transcription = filtered_transcription.replace(char, "")
-
     print("\nTranscription modified:",filtered_transcription)
+
+
     print("Ground truth arpa:", " ".join(
         ["-".join(word["phones"]) for word in sample["words"]]
     ))
+
+
     ground_truth_phonemes = am.normalize_phonemes([ph for word in sample["words"] for ph in word["phones"]])
     predicted_phonemes = am.normalize_phonemes(re.split(r" |-", filtered_transcription))
     print("\nGround truth phonemes:", ground_truth_phonemes)
@@ -57,11 +65,11 @@ df = pd.DataFrame(columns=["PER", "Accuracy", "Text", "Transcription"])
 avg_per = 0
 
 
-for i in range(0,10):
+for i in range(400,410):
     df.loc[i] = process_index(i)
 
 #%%
 print(df)
 
 #%%
-process_index(0)
+process_index(200)
