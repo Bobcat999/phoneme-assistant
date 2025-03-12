@@ -65,10 +65,14 @@ def process_audio_array(ground_truth_phonemes, audio_array, sampling_rate=16000,
     if extraction_model is None:
         extraction_model = PhonemeExtractor()
     
+    if len(ground_truth_phonemes) <= 1:
+        raise ValueError("ground_truth_phonemes must have at least 2 elements)")
+
+    
     # get information from extraction
     transcription, logits, predicted_ids, top2_probs, top2_ids = extraction_model.extract_phoneme(audio=audio_array, sampling_rate=sampling_rate)
 
-    filtered_transcription = model_output_filtering(transcription)
+    filtered_transcription = model_output_filtering(transcription).replace("-", " ").split(" ")
 
     per = am.compute_phoneme_error_rate(ground_truth_phonemes, filtered_transcription)
 

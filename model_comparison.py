@@ -14,7 +14,7 @@ audio = train[0][""]
 from phoneme_extractor import PhonemeExtractor
 extractor = PhonemeExtractor()
 
-print(extractor.extract_phoneme(audio_array, sampling_rate))
+# print(extractor.extract_phoneme(audio_array, sampling_rate))
 
 
 # print(process_audio_array())
