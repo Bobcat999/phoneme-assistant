@@ -155,13 +155,13 @@ def arpabet2ipa(x,language):
     (il,ttf)=translate_string(x,phonecode_tables._arpabet2ipa)
     ol=attach_tones_to_vowels(il,phonecode_tables._ipa_stressmarkers,
                               phonecode_tables._ipa_vowels,-1,-1)
-    return(''.join(ol))
+    return ol
 
 def ipa2arpabet(x,language):
     '''Convert IPA symbols to ARPABET'''
     (il,ttf)=translate_string(x,phonecode_tables._ipa2arpabet)
     ol=attach_tones_to_vowels(il,'012',phonecode_tables._arpabet_vowels,1,1)
-    return(''.join(ol))
+    return ol
 
 def timit2ipa(x,L):
     '''Convert TIMIT phone codes to IPA'''
