@@ -6,7 +6,7 @@ import wave
 from grapheme_to_phoneme import grapheme_to_phoneme
 from process_audio import process_audio_array
 
-def record_audio(filename, duration=5, fs=44100):
+def record_audio(filename, duration=5, fs=16000):
     """Records audio from the microphone and saves it to a WAV file.
 
     Args:
@@ -28,10 +28,10 @@ def record_audio(filename, duration=5, fs=44100):
 #Combining everything into a single function
 def record_and_process_pronunciation(text, phoneme_extraction_model, use_previous_recording=False, word_extravtion_model=None):
     if not use_previous_recording:
-        record_audio("output.wav")
+        record_audio("temp_audio/output.wav")
     ground_truth_phonemes = grapheme_to_phoneme(text)
 
-    y, sr = librosa.load("output.wav")
+    y, sr = librosa.load("temp_audio/output.wav")
     output = process_audio_array(ground_truth_phonemes=ground_truth_phonemes, audio_array=y, sampling_rate=16000, phoneme_extraction_model=phoneme_extraction_model, word_extraction_model=word_extravtion_model)
     return output, ground_truth_phonemes
 
