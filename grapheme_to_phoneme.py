@@ -3,7 +3,11 @@
 import eng_to_ipa as G2p
 
 
-def grapheme_to_phoneme(grapheme):
+def grapheme_to_phoneme(grapheme) -> list[tuple]:
+    """
+    Converts a string of graphemes into phonemes by removing stress markers and
+    returning a list of (word, list of individual phonemes).
+    """
     unfiltered_phonemes = G2p.convert(grapheme)
     normalized = unfiltered_phonemes.split(" ")
     output = []

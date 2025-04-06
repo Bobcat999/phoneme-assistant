@@ -268,7 +268,7 @@ if __name__ == "__main__":
     # Load the audio file
     # audio, sampling_rate = librosa.load("output.wav", sr=16000)
     # record_audio("output.wav")
-    audio, sampling_rate = librosa.load("output.wav", sr=16000)
+    audio, sampling_rate = librosa.load("./temp_audio/output.wav", sr=16000)
 
     # get ground truth
     ground_truth_phonemes = grapheme_to_phoneme("the quick brown fox jumped over the lazy dog")

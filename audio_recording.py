@@ -38,12 +38,13 @@ def record_and_process_pronunciation(text, phoneme_extraction_model, use_previou
 if __name__ == "__main__":
     from phoneme_extractor import PhonemeExtractor
     extractor = PhonemeExtractor()
-    scentence = "The cat is on the mat"
-    print(f"Say: {scentence}")
-    output, ground_truth_phonemes = record_and_process_pronunciation(scentence, extractor)
+    sentence = "the quick brown fox jumped over the lazy dog"
+    
+    print(f"Say: {sentence}")
+    output, ground_truth_phonemes = record_and_process_pronunciation(sentence, extractor)
     print(f"Output: {output}")
     print(f"Ground truth: {ground_truth_phonemes}")
 
     #GPT stuff
-    print(f'Attempted scentence: {scentence}')
+    print(f'Attempted scentence: {sentence}')
     print(f'Ground truth phonemes: {ground_truth_phonemes}')
