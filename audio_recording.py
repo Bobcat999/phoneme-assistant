@@ -5,36 +5,92 @@ import numpy as np
 import wave
 from grapheme_to_phoneme import grapheme_to_phoneme
 from process_audio import process_audio_array
+import threading
+import queue
+import time
+import webrtcvad
 
-def record_audio(filename, duration=5, fs=16000):
-    """Records audio from the microphone and saves it to a WAV file.
+def run_vad(output_file="temp_audio/output.wav", fs=16000, chunk_duration=0.03, vad_mode=3, silence_threshold=50):
+    chunk_size = int(fs * chunk_duration)
+    audio_queue = queue.Queue()
+    stop_event = threading.Event()
 
-    Args:
-        filename (str): The name of the file to save the audio to.
-        duration (int): The duration of the recording in seconds.
-        fs (int): The sampling rate (samples per second).
-    """
-    print("Recording...")
-    audio_data = sd.rec(int(duration * fs), samplerate=fs, channels=1, dtype=np.int16)
-    sd.wait()
-    print("Finished recording.")
+    def audio_callback(indata, frames, time_info, status):
+        if status:
+            print(status)
+        audio_queue.put(indata.copy())
 
-    with wave.open(filename, 'wb') as wf:
-        wf.setnchannels(1)
-        wf.setsampwidth(2)  # 2 bytes because of np.int16
-        wf.setframerate(fs)
-        wf.writeframes(audio_data.tobytes())
+    def record_audio():
+        with sd.InputStream(samplerate=fs, channels=1, dtype='int16',
+                            blocksize=chunk_size, callback=audio_callback):
+            print("Recording started...")
+            while not stop_event.is_set():
+                time.sleep(0.1)
+            print("Recording stopped.")
+
+    def process_vad():
+        vad = webrtcvad.Vad(vad_mode)
+        silent_chunks = 0
+        frames = []
+
+        while not stop_event.is_set():
+            try:
+                chunk = audio_queue.get(timeout=1)
+            except queue.Empty:
+                continue
+
+            is_speech = vad.is_speech(chunk.tobytes(), fs)
+            frames.append(chunk)
+
+            if not is_speech:
+                silent_chunks += 1
+                if silent_chunks > silence_threshold:
+                    stop_event.set()
+            else:
+                silent_chunks = 0
+
+        # Save recorded audio to a WAV file
+        audio_data = np.concatenate(frames)
+        with wave.open(output_file, 'wb') as wf:
+            wf.setnchannels(1)
+            wf.setsampwidth(2)  # 16-bit audio
+            wf.setframerate(fs)
+            wf.writeframes(audio_data.tobytes())
+        print(f"Audio saved to {output_file}")
+
+    # Start threads
+    recording_thread = threading.Thread(target=record_audio)
+    vad_thread = threading.Thread(target=process_vad)
+
+    recording_thread.start()
+    vad_thread.start()
+
+    recording_thread.join()
+    vad_thread.join()
+
 
 #Combining everything into a single function
-def record_and_process_pronunciation(text, phoneme_extraction_model, use_previous_recording=False, word_extravtion_model=None):
+def record_and_process_pronunciation(text, phoneme_extraction_model, use_previous_recording=False, word_extraction_model=None):
+    """Does all of the work for recording and processing the pronunciation of phonemes
+
+    Args:
+        text (_type_): _description_
+        phoneme_extraction_model (_type_): _description_
+        use_previous_recording (bool, optional): _description_. Defaults to False.
+        word_extraction_model (_type_, optional): _description_. Defaults to None.
+
+    Returns:
+        _type_: _description_
+    """
     if not use_previous_recording:
-        record_audio("temp_audio/output.wav")
+        run_vad("temp_audio/output.wav")
     ground_truth_phonemes = grapheme_to_phoneme(text)
 
     y, sr = librosa.load("temp_audio/output.wav")
-    output = process_audio_array(ground_truth_phonemes=ground_truth_phonemes, audio_array=y, sampling_rate=16000, phoneme_extraction_model=phoneme_extraction_model, word_extraction_model=word_extravtion_model)
+    output = process_audio_array(ground_truth_phonemes=ground_truth_phonemes, audio_array=y, sampling_rate=16000, phoneme_extraction_model=phoneme_extraction_model, word_extraction_model=word_extraction_model) 
     return output, ground_truth_phonemes
 
+#%%
 if __name__ == "__main__":
     from phoneme_extractor import PhonemeExtractor
     extractor = PhonemeExtractor()
