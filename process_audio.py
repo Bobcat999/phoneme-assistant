@@ -7,6 +7,7 @@ import re
 import evaluation.accuracy_metrics as am
 from grapheme_to_phoneme import grapheme_to_phoneme as g2p
 from evaluation.accuracy_metrics import compute_phoneme_error_rate
+from speech_problem_classifier import SpeechProblemClassifier
 
 def process_audio_array_verbose(audio_array, sampling_rate=16000, extraction_model=None, sample=None):
     """
@@ -253,7 +254,15 @@ def process_audio_array(ground_truth_phonemes, audio_array, sampling_rate=16000,
     return results
 
 
-def analyze_results(results):
+def analyze_results(results: list) -> tuple[pd.DataFrame, pd.Series]:
+    """Turns the results from process audio array into a dataframe and does calculations on it
+
+    Args:
+        results (list): results from process audio array
+
+    Returns:
+        tuple[pd.Dataframe, pd.Series]: the dataframe of all of the results and the series with the highest per word
+    """
     df = pd.DataFrame(results)
     highest_per = df.sort_values("per", ascending=False).iloc[0]
     return df, highest_per
@@ -276,6 +285,7 @@ if __name__ == "__main__":
     # Process the audio
     results = process_audio_array(ground_truth_phonemes, audio, sampling_rate, phoneme_extraction_model=extractor)
 
+
     for result in results:
         print(result)
     print()
@@ -284,3 +294,7 @@ if __name__ == "__main__":
     print(highest_per)
 
     print({"pronunciation": results, "highest_per_word": highest_per.to_dict()})
+
+    # Analyze results
+    problem_summary = SpeechProblemClassifier.classify_problems(results)
+    print("Most Common Problems:", problem_summary)

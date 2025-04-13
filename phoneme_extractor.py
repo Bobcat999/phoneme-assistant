@@ -33,14 +33,14 @@ class PhonemeExtractor:
     def extract_phoneme(self, audio, sampling_rate=16000):
         # Load the audio file
         # Tokenize the audio file
-        input_values = self.processor(audio, sampling_rate=sampling_rate, return_tensors="pt").input_values
+        processor_outputs = self.processor(audio, sampling_rate=sampling_rate, return_tensors="pt")
+        input_values = processor_outputs.input_values
+
         # retrieve logits from the model
         with torch.no_grad():
-            logits = self.model(input_values).logits
+            outputs = self.model(input_values)
 
-        # take the probs
-        probs = torch.softmax(logits, dim=-1)
-        top2_probs, top2_ids = torch.topk(probs, k=2, dim=-1)
+        logits = outputs.logits
 
         # take argmax and decode, greedy decoding
         predicted_ids = torch.argmax(logits, dim=-1)
