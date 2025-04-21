@@ -3,8 +3,13 @@ from dotenv import load_dotenv
 from phoneme_extractor import PhonemeExtractor
 from word_extractor import WordExtractor
 from text_to_audio import ElevenLabsAPIClient
+from audio_preprocessing import preprocess_audio
 import os
 import pandas as pd
+from audio_recording import record_and_process_pronunciation
+from process_audio import analyze_results
+from phonecodes.phonecodes import ipa2arpabet
+import json
 
 class PhonemeAssistant:
     def __init__(self):
@@ -36,18 +41,19 @@ class PhonemeAssistant:
             output_format="mp3_44100_128",)
         return phonemes
 
-    def get_response(self, attempted_sentence:str, results:list, highest_per_word: pd.Series) -> dict:
+    def get_response(self, attempted_sentence:str, results:list, highest_per_word: pd.Series, problem_summary: dict) -> dict:
         # format the user input for our model
         user_input = {
             "attempted": attempted_sentence,
             "pronunciation": results,
-            "highest_per_word": highest_per_word.to_dict()
+            "highest_per_word": highest_per_word.to_dict(),
+            "problem_summary": problem_summary
         }
 
         # add the user input to the conversation history
         self.conversation_history.append({
             "role": "user",
-            "content": user_input
+            "content": str(user_input)
         })
 
         # get the response from the model
@@ -92,15 +98,31 @@ class PhonemeAssistant:
             "content": model_response})
         
         return model_response
+    
+    # def get_dataset_index_and_get_response(self):
 
     def record_audio_and_get_response(self, attempted_sentence, verbose=False):
-        results, ground_truth_phonemes = record_and_process_pronunciation(attempted_sentence, phoneme_extraction_model=self.phoneme_extractor, word_extraction_model=self.word_extractor)
-        df, highest_per_word = analyze_results(results)
+        recorded = False
+        while not recorded:
+            try:
+                results, ground_truth_phonemes = record_and_process_pronunciation(
+                    attempted_sentence,
+                    phoneme_extraction_model=self.phoneme_extractor,
+                    word_extraction_model=self.word_extractor
+                )
+                recorded = True
+            except ValueError:
+                print("No audio detected, you must speak again")
+
+        
+        df, highest_per_word, problem_summary = analyze_results(results)
         if verbose:
             print("Dataframe: ", df)
+            print("Results")
             print("Highest error word: ", highest_per_word)
-        model_response = self.get_response(attempted_sentence=attempted_scentance, results=results, highest_per_word=highest_per_word)
-        return model_response
+
+        model_response = self.get_response(attempted_sentence=attempted_sentence, results=results, highest_per_word=highest_per_word, problem_summary=problem_summary)
+        return model_response, df, highest_per_word, problem_summary
     
     def feedback_to_audio(self, feedback: str):
         return self.tts.getAudio(feedback, playAudio=True)
@@ -110,10 +132,6 @@ class PhonemeAssistant:
 
 # Default running behavior
 if __name__ == "__main__":
-    from audio_recording import record_and_process_pronunciation
-    from process_audio import analyze_results
-    from phonecodes.phonecodes import ipa2arpabet
-    import json
 
     # AI models
     phoneme_assistant = PhonemeAssistant()
@@ -124,7 +142,7 @@ if __name__ == "__main__":
 
     # user loop
     while True:
-        output = phoneme_assistant.record_audio_and_get_response(attempted_sentence, verbose=True)
+        output,_,_,_ = phoneme_assistant.record_audio_and_get_response(attempted_sentence, verbose=True)
 
         output_json = json.loads(output)
         print("\nFeedback: ")
@@ -133,10 +151,10 @@ if __name__ == "__main__":
         print("\n New sentence to say: ")
         print(output_json['sentence'])
 
-        attempted_scentance = output_json['sentence'].replace(".", "").lower()
+        attempted_sentence = output_json['sentence'].replace(".", "").lower()
 
         audio_feedback = f'{output_json["feedback"]}'
-        phoneme_assistant.feedback_to_audio(audio_feedback)
+        # phoneme_assistant.feedback_to_audio(audio_feedback)
 
         if input("Do you want to continue? (yes/no): ") != "yes":
             break

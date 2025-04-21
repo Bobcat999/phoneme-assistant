@@ -8,6 +8,7 @@ import evaluation.accuracy_metrics as am
 from grapheme_to_phoneme import grapheme_to_phoneme as g2p
 from evaluation.accuracy_metrics import compute_phoneme_error_rate
 from speech_problem_classifier import SpeechProblemClassifier
+from audio_preprocessing import preprocess_audio
 
 def process_audio_array_verbose(audio_array, sampling_rate=16000, extraction_model=None, sample=None):
     """
@@ -34,6 +35,73 @@ def process_audio_array_verbose(audio_array, sampling_rate=16000, extraction_mod
     print("\nTranslated grapheme", g2p(sample["text"].lower()))
 
     return transcription, per, sample["accuracy"]/10.0, sample["text"]
+
+def compute_per(gt_phonemes, pred_phonemes):
+    """
+    Compute the Phoneme Error Rate (PER) between two phoneme sequences.
+    """
+    m, n = len(gt_phonemes), len(pred_phonemes)
+    dp = np.zeros((m + 1, n + 1), dtype=int)
+
+    for i in range(m + 1):
+        dp[i][0] = i
+    for j in range(n + 1):
+        dp[0][j] = j
+
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if gt_phonemes[i - 1] == pred_phonemes[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1]
+            else:
+                dp[i][j] = 1 + min(
+                    dp[i - 1][j],    # Deletion
+                    dp[i][j - 1],    # Insertion
+                    dp[i - 1][j - 1] # Substitution
+                )
+    return dp[m][n] / max(m, 1)
+
+def align_phonemes_to_words(pred_phonemes: list, gt_words_phonemes: list[tuple[str, list[str]]]):
+    """
+    Align predicted phonemes to ground truth words using dynamic programming to minimize total PER.
+    
+    Parameters:
+    - pred_phonemes: List of predicted phonemes.
+    - gt_words_phonemes: List of tuples (word, [phonemes]) representing ground truth words and their phonemes.
+    
+    Returns:
+    - alignment: List of tuples (word, aligned_pred_phonemes, per) representing the alignment.
+    """
+    n = len(pred_phonemes)
+    m = len(gt_words_phonemes)
+    dp = [ [float('inf')] * (n + 1) for _ in range(m + 1) ]
+    backtrack = [ [None] * (n + 1) for _ in range(m + 1) ]
+    dp[0][0] = 0
+
+    for i in range(1, m + 1):
+        gt_word, gt_phs = gt_words_phonemes[i - 1]
+        for j in range(i, n + 1):
+            for k in range(i - 1, j):
+                pred_segment = pred_phonemes[k:j]
+                per = compute_per(gt_phs, pred_segment)
+                cost = dp[i - 1][k] + per
+                if cost < dp[i][j]:
+                    dp[i][j] = cost
+                    backtrack[i][j] = k
+
+    # Backtracking to find the alignment
+    alignment = []
+    i, j = m, n
+    while i > 0:
+        k = backtrack[i][j]
+        gt_word, gt_phs = gt_words_phonemes[i - 1]
+        pred_segment = pred_phonemes[k:j]
+        per = compute_per(gt_phs, pred_segment)
+        alignment.append((gt_word, pred_segment, per))
+        i -= 1
+        j = k
+
+    alignment.reverse()
+    return alignment
 
 
 def align_sequences(gt, pred):
@@ -159,25 +227,35 @@ def process_audio_array(ground_truth_phonemes, audio_array, sampling_rate=16000,
     
     if len(ground_truth_phonemes) <= 1:
         raise ValueError("ground_truth_phonemes must have at least 2 elements)")
+
+    # preprocess the audio
+    audio_array = preprocess_audio(audio=audio_array, sr=sampling_rate)
     
     # get information from extraction
     phoneme_predictions = phoneme_extraction_model.extract_phoneme(audio=audio_array, sampling_rate=sampling_rate) # output in [[phoneme1, phoneme2, ...], [phoneme1, phoneme2, ...], ...]
-
-
     predicted_words = word_extraction_model.extract_words(audio=audio_array, sampling_rate=sampling_rate) # output in [word1, word2, ...]
-    ground_truth_words = [word for word, _ in ground_truth_phonemes]
 
-    # Pad the phoneme predictions to match the number of words
-    while len(phoneme_predictions) < len(predicted_words):
-        phoneme_predictions.append([])  # Add an empty phoneme list to avoid IndexError
+    if phoneme_predictions == None or predicted_words == None or len(phoneme_predictions) <= 1 or len(predicted_words) <= 1:
+        raise ValueError("The audio provided has no speech inside")
+
+    print("unaligned phoneme predictions: ", phoneme_predictions)
+
+
+    # regroup the phonemes to reflect the words that were spoken
+    flattened_phoneme_predictions = [item for sublist in phoneme_predictions for item in sublist]
+    predicted_words_phonemes = g2p(" ".join(predicted_words)) # take the words our model thinks we said and get the phonemes for them
+    alignment = align_phonemes_to_words(flattened_phoneme_predictions, predicted_words_phonemes)
+    phoneme_predictions = [pred_phonemes for _, pred_phonemes,_ in alignment]
+    print("aligned phoneme predictions: ", phoneme_predictions)
+
 
 
     # Align the words
+    ground_truth_words = [word for word, _ in ground_truth_phonemes]
     word_ops = align_words(ground_truth_words, predicted_words)
-
     print("Word operations:", word_ops)
-
     results = []
+
 
     gt_idx, pred_idx = 0, 0 # indices for ground truth and predicted phonemes
     for op, gt_word_op, pred_word_op in word_ops:
@@ -265,19 +343,22 @@ def analyze_results(results: list) -> tuple[pd.DataFrame, pd.Series]:
     """
     df = pd.DataFrame(results)
     highest_per = df.sort_values("per", ascending=False).iloc[0]
-    return df, highest_per
+    problem_summary = SpeechProblemClassifier.classify_problems(results)
+    return df, highest_per, problem_summary
 
 if __name__ == "__main__":
     import librosa
     from grapheme_to_phoneme import grapheme_to_phoneme
-    from audio_recording import record_audio, record_and_process_pronunciation
+    from audio_recording import run_vad
+
 
     extractor = PhonemeExtractor()
 
     # Load the audio file
     # audio, sampling_rate = librosa.load("output.wav", sr=16000)
-    # record_audio("output.wav")
+    # run_vad()
     audio, sampling_rate = librosa.load("./temp_audio/output.wav", sr=16000)
+
 
     # get ground truth
     ground_truth_phonemes = grapheme_to_phoneme("the quick brown fox jumped over the lazy dog")

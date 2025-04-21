@@ -9,7 +9,7 @@ import math
 import matplotlib.pyplot as plt  # changed
 
 #%%
-loader = SpeechDatasetLoader()
+loader = SpeechDatasetLoader((0,10))
 phoneme_model = PhonemeExtractor()
 word_model = WordExtractor()
 #%%
@@ -39,8 +39,8 @@ class MeasureAccuracy:
         else:
             merged = merged_list
 
-        model_per_vals = merged["model_per"].to_list()
-        gt_per_vals = merged["ground_truth_per"].to_list()
+        model_per_vals = pd.Series(merged["model_per"]).fillna(1).to_list()
+        gt_per_vals = pd.Series(merged["ground_truth_per"]).fillna(1).to_list()
 
         # mean absolute error
         mae = sum(abs(m - g) for m, g in zip(model_per_vals, gt_per_vals)) / len(model_per_vals)
@@ -74,7 +74,7 @@ class MeasureAccuracy:
 
         # use our model to process and analyze our results
         results = process_audio_array(ground_truth, audio_array, 16000, phoneme_extraction_model=self.phoneme_model, word_extraction_model=self.word_model)
-        df, _ = analyze_results(results)
+        df, _, _ = analyze_results(results)
 
         # construct our output dataframe
         results = []
@@ -152,8 +152,10 @@ results, correlation_coefficient = accuracy.compare_index(300)
 print(results)
 print("correlation coef:", correlation_coefficient)
 #%%
+import numpy as np
 accuracy = MeasureAccuracy(dataset=loader, phoneme_model=phoneme_model, word_model=word_model)
-results = accuracy.compare_indexes(range(0,5))
+results = accuracy.compare_indexes(map(int,list(np.random.randint(1,500,50))))
 #%%
 print(results)
 results[0].plot(x="ground_truth_accuracy", y="model_per", kind="scatter")
+results[0].plot(x="ground_truth_per", y="model_per", kind="scatter")

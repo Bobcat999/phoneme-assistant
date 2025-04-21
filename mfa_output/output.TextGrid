@@ -2,7 +2,7 @@ File type = "ooTextFile"
 Object class = "TextGrid"
 
 xmin = 0 
-xmax = 5.0 
+xmax = 5.13 
 tiers? <exists> 
 size = 2 
 item []: 
@@ -10,87 +10,83 @@ item []:
         class = "IntervalTier" 
         name = "words" 
         xmin = 0 
-        xmax = 5.0 
-        intervals: size = 10 
+        xmax = 5.13 
+        intervals: size = 9 
         intervals [1]:
             xmin = 0.0 
-            xmax = 0.35 
+            xmax = 0.92 
             text = "" 
         intervals [2]:
-            xmin = 0.35 
-            xmax = 0.71 
-            text = "fox" 
+            xmin = 0.92 
+            xmax = 1.31 
+            text = "brown" 
         intervals [3]:
-            xmin = 0.71 
-            xmax = 0.93 
-            text = "jumped" 
+            xmin = 1.31 
+            xmax = 1.47 
+            text = "fox" 
         intervals [4]:
-            xmin = 0.93 
-            xmax = 1.33 
-            text = "over" 
+            xmin = 1.47 
+            xmax = 2.1 
+            text = "jumped" 
         intervals [5]:
-            xmin = 1.33 
-            xmax = 1.48 
-            text = "" 
+            xmin = 2.1 
+            xmax = 2.6 
+            text = "over" 
         intervals [6]:
-            xmin = 1.48 
-            xmax = 3.11 
+            xmin = 2.6 
+            xmax = 2.83 
             text = "the" 
         intervals [7]:
-            xmin = 3.11 
-            xmax = 3.29 
-            text = "" 
-        intervals [8]:
-            xmin = 3.29 
-            xmax = 4.12 
+            xmin = 2.83 
+            xmax = 3.25 
             text = "lazy" 
-        intervals [9]:
-            xmin = 4.12 
-            xmax = 4.55 
+        intervals [8]:
+            xmin = 3.25 
+            xmax = 3.58 
             text = "dog" 
-        intervals [10]:
-            xmin = 4.55 
-            xmax = 5.0 
+        intervals [9]:
+            xmin = 3.58 
+            xmax = 5.13 
             text = "" 
     item [2]:
         class = "IntervalTier" 
         name = "phones" 
         xmin = 0 
-        xmax = 5.0 
+        xmax = 5.13 
         intervals: size = 9 
         intervals [1]:
             xmin = 0.0 
-            xmax = 0.71 
+            xmax = 0.92 
             text = "" 
         intervals [2]:
-            xmin = 0.71 
-            xmax = 0.93 
+            xmin = 0.92 
+            xmax = 1.31 
             text = "spn" 
         intervals [3]:
-            xmin = 0.93 
-            xmax = 1.33 
+            xmin = 1.31 
+            xmax = 1.47 
             text = "spn" 
         intervals [4]:
-            xmin = 1.33 
-            xmax = 1.48 
-            text = "" 
+            xmin = 1.47 
+            xmax = 2.1 
+            text = "spn" 
         intervals [5]:
-            xmin = 1.48 
-            xmax = 3.11 
+            xmin = 2.1 
+            xmax = 2.6 
             text = "spn" 
         intervals [6]:
-            xmin = 3.11 
-            xmax = 3.29 
-            text = "" 
+            xmin = 2.6 
+            xmax = 2.83 
+            text = "spn" 
         intervals [7]:
-            xmin = 3.29 
-            xmax = 4.12 
+            xmin = 2.83 
+            xmax = 3.25 
             text = "spn" 
         intervals [8]:
-            xmin = 4.12 
-            xmax = 4.55 
+            xmin = 3.25 
+            xmax = 3.58 
             text = "spn" 
         intervals [9]:
-            xmin = 4.55 
-            xmax = 5.0 
+            xmin = 3.58 
+            xmax = 5.13 
             text = "" 

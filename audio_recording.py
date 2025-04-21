@@ -70,7 +70,7 @@ def run_vad(output_file="temp_audio/output.wav", fs=16000, chunk_duration=0.03, 
 
 
 #Combining everything into a single function
-def record_and_process_pronunciation(text, phoneme_extraction_model, use_previous_recording=False, word_extraction_model=None):
+def record_and_process_pronunciation(text, phoneme_extraction_model=None, use_previous_recording=False, word_extraction_model=None):
     """Does all of the work for recording and processing the pronunciation of phonemes
 
     Args:
@@ -84,10 +84,11 @@ def record_and_process_pronunciation(text, phoneme_extraction_model, use_previou
     """
     if not use_previous_recording:
         run_vad("temp_audio/output.wav")
+
     ground_truth_phonemes = grapheme_to_phoneme(text)
 
-    y, sr = librosa.load("temp_audio/output.wav")
-    output = process_audio_array(ground_truth_phonemes=ground_truth_phonemes, audio_array=y, sampling_rate=16000, phoneme_extraction_model=phoneme_extraction_model, word_extraction_model=word_extraction_model) 
+    audio_array, sr = librosa.load("temp_audio/output.wav", sr=16000)
+    output = process_audio_array(ground_truth_phonemes=ground_truth_phonemes, audio_array=audio_array, sampling_rate=16000, phoneme_extraction_model=phoneme_extraction_model, word_extraction_model=word_extraction_model) 
     return output, ground_truth_phonemes
 
 #%%
@@ -97,10 +98,13 @@ if __name__ == "__main__":
     sentence = "the quick brown fox jumped over the lazy dog"
     
     print(f"Say: {sentence}")
-    output, ground_truth_phonemes = record_and_process_pronunciation(sentence, extractor)
+    output, ground_truth_phonemes = record_and_process_pronunciation(sentence)
     print(f"Output: {output}")
     print(f"Ground truth: {ground_truth_phonemes}")
 
     #GPT stuff
     print(f'Attempted scentence: {sentence}')
     print(f'Ground truth phonemes: {ground_truth_phonemes}')
+
+    #%%
+    print(output)
