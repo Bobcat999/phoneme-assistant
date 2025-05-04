@@ -157,53 +157,6 @@ def align_sequences(gt, pred):
     operations.reverse()
     return operations
 
-def align_words(gt_words, pred_words):
-    """
-    Aligns the ground truth and predicted word sequences.
-    Uses a simple cost: 0 for an exact match, 1 otherwise.
-    
-    Returns a list of operations as tuples:
-      ('match'|'substitution'|'deletion'|'insertion', gt_word, pred_word)
-    """
-    m, n = len(gt_words), len(pred_words)
-    dp = [[0] * (n + 1) for _ in range(m + 1)]
-    
-    for i in range(m + 1):
-        dp[i][0] = i
-    for j in range(n + 1):
-        dp[0][j] = j
-
-    for i in range(1, m + 1):
-        for j in range(1, n + 1):
-            cost = 0 if gt_words[i - 1] == pred_words[j - 1] else 1
-            dp[i][j] = min(
-                dp[i - 1][j] + 1,      # deletion
-                dp[i][j - 1] + 1,      # insertion
-                dp[i - 1][j - 1] + cost  # match/substitution
-            )
-    
-    ops = []
-    i, j = m, n
-    while i > 0 or j > 0:
-        if i > 0 and j > 0 and dp[i][j] == dp[i - 1][j - 1] + (0 if gt_words[i - 1] == pred_words[j - 1] else 1):
-            if gt_words[i - 1] == pred_words[j - 1]:
-                ops.append(('match', gt_words[i - 1], pred_words[j - 1]))
-            else:
-                ops.append(('substitution', gt_words[i - 1], pred_words[j - 1]))
-            i -= 1
-            j -= 1
-        elif i > 0 and dp[i][j] == dp[i - 1][j] + 1:
-            ops.append(('deletion', gt_words[i - 1], None))
-            i -= 1
-        elif j > 0 and dp[i][j] == dp[i][j - 1] + 1:
-            ops.append(('insertion', None, pred_words[j - 1]))
-            j -= 1
-    ops.reverse()
-    return ops
-    
-    
-
-
 def process_audio_array(ground_truth_phonemes, audio_array, sampling_rate=16000, phoneme_extraction_model=None, word_extraction_model=None):
     """
     Use the phoneme extractor to transcribe an audio array.
@@ -252,7 +205,7 @@ def process_audio_array(ground_truth_phonemes, audio_array, sampling_rate=16000,
 
     # Align the words
     ground_truth_words = [word for word, _ in ground_truth_phonemes]
-    word_ops = align_words(ground_truth_words, predicted_words)
+    word_ops = align_sequences(ground_truth_words, predicted_words)
     print("Word operations:", word_ops)
     results = []
 
@@ -370,12 +323,10 @@ if __name__ == "__main__":
     for result in results:
         print(result)
     print()
-    df, highest_per = analyze_results(results)
+    df, highest_per, problem_summary = analyze_results(results)
     print(df)
     print(highest_per)
 
     print({"pronunciation": results, "highest_per_word": highest_per.to_dict()})
 
-    # Analyze results
-    problem_summary = SpeechProblemClassifier.classify_problems(results)
     print("Most Common Problems:", problem_summary)
