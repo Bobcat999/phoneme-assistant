@@ -9,7 +9,7 @@ import math
 import matplotlib.pyplot as plt  # changed
 
 #%%
-loader = SpeechDatasetLoader((0,10))
+loader = SpeechDatasetLoader((0,10), True)
 phoneme_model = PhonemeExtractor()
 word_model = WordExtractor()
 #%%
@@ -86,6 +86,8 @@ class MeasureAccuracy:
         if word_info:
             for i, w in enumerate(clean_word_info):
                 ground_truth_per = len(w["mispronunciations"]) / len(w["phones"])
+                if ground_truth_per == 0 or w["accuracy"] == 10:
+                    continue  # Skip words with ground_truth_per == 0 or accuracy == 10
                 print("Word info:", w)
                 print("Model info:", df.iloc[i])
                 model_per = df.iloc[i]["per"]
@@ -154,8 +156,52 @@ print("correlation coef:", correlation_coefficient)
 #%%
 import numpy as np
 accuracy = MeasureAccuracy(dataset=loader, phoneme_model=phoneme_model, word_model=word_model)
-results = accuracy.compare_indexes(map(int,list(np.random.randint(1,500,50))))
+results = accuracy.compare_indexes(map(int,list(np.random.randint(1,len(loader.get_dataset()[0]),50))))
 #%%
 print(results)
-results[0].plot(x="ground_truth_accuracy", y="model_per", kind="scatter")
-results[0].plot(x="ground_truth_per", y="model_per", kind="scatter")
+print("correlation coef:", results[3])
+print("mean squared error", results[2])
+print("mean absolute error", results[1])
+
+# Import necessary libraries
+import numpy as np
+
+# Filter out invalid data for ground_truth_accuracy vs model_per
+valid_data = results[0].dropna(subset=["ground_truth_accuracy", "model_per"])
+x = valid_data["ground_truth_accuracy"]
+y = valid_data["model_per"]
+
+# Plot ground_truth_accuracy vs model_per with extended line of best fit
+plt.scatter(x, y, label="Data Points")
+coefficients = np.polyfit(x, y, 1)  # Linear fit (degree 1)
+line = np.poly1d(coefficients)
+
+# Define the range of x values to cover the entire graph
+x_range = np.linspace(0, 10, 100)  # From 0 to 10 with 100 points
+plt.plot(x_range, line(x_range), color="red", label="Best Fit Line")  # Extended line]
+plt.xlabel("Ground Truth Accuracy")
+plt.ylabel("Model PER")
+plt.xlim(0, 10)  # Ensure the x-axis goes from 0 to 10
+plt.legend()
+plt.title("Ground Truth Accuracy vs Model PER")
+plt.show()
+
+# Filter out invalid data for ground_truth_per vs model_per
+valid_data = results[0].dropna(subset=["ground_truth_per", "model_per"])
+x = valid_data["ground_truth_per"]
+y = valid_data["model_per"]
+
+# Plot ground_truth_per vs model_per with extended line of best fit
+plt.scatter(x, y, label="Data Points")
+coefficients = np.polyfit(x, y, 1)  # Linear fit (degree 1)
+line = np.poly1d(coefficients)
+
+# Define the range of x values to cover the entire graph
+x_range = np.linspace(0, 1, 100)  # From 0 to 1 with 100 points
+plt.plot(x_range, line(x_range), color="red", label="Best Fit Line")  # Extended line
+plt.xlabel("Ground Truth PER")
+plt.ylabel("Model PER")
+plt.xlim(0, 1)  # Ensure the x-axis goes from 0 to 1
+plt.legend()
+plt.title("Ground Truth PER vs Model PER")
+plt.show()

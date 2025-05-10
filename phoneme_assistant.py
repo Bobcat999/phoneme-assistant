@@ -117,9 +117,10 @@ class PhonemeAssistant:
         
         df, highest_per_word, problem_summary = analyze_results(results)
         if verbose:
-            print("Dataframe: ", df)
+            print("Dataframe: ")
+            print(df)
             print("Results")
-            print("Highest error word: ", highest_per_word)
+            print(f"Highest error word: \n{ highest_per_word}")
 
         model_response = self.get_response(attempted_sentence=attempted_sentence, results=results, highest_per_word=highest_per_word, problem_summary=problem_summary)
         return model_response, df, highest_per_word, problem_summary
