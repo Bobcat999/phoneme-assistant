@@ -241,6 +241,8 @@ def process_audio_array(ground_truth_phonemes, audio_array, sampling_rate=16000,
                 "missed": missed,
                 "added": added,
                 "substituted": substituted,
+                "total_phonemes": len(gt_phonemes),
+                "total_errors": len(missed) + len(added) + len(substituted),
             })
             gt_idx += 1
             pred_idx += 1
@@ -260,6 +262,8 @@ def process_audio_array(ground_truth_phonemes, audio_array, sampling_rate=16000,
                 "missed": None,
                 "added": None,
                 "substituted": None,
+                "total_phonemes": 0,
+                "total_errors": 0,
                 "error": "Extra word predicted."
             })
             pred_idx += 1
@@ -278,26 +282,46 @@ def process_audio_array(ground_truth_phonemes, audio_array, sampling_rate=16000,
                 "missed": None,
                 "added": None,
                 "substituted": None,
+                "total_phonemes": 0,
+                "total_errors": 0,
                 "error": "Word missing in prediction."
             })
             gt_idx += 1
 
     return results
 
-
-def analyze_results(results: list) -> tuple[pd.DataFrame, pd.Series]:
-    """Turns the results from process audio array into a dataframe and does calculations on it
+def analyze_results(results: list[dict]) -> tuple[pd.DataFrame, float, dict]:
+    """
+    Analyzes the results of phoneme and word extraction.
 
     Args:
-        results (list): results from process audio array
+        results (list[dict]): List of word-level results containing phoneme-level details.
 
     Returns:
-        tuple[pd.Dataframe, pd.Series]: the dataframe of all of the results and the series with the highest per word
+        tuple[pd.DataFrame, float, dict]: DataFrame of word-level results, sentence-level PER, and aggregated error counts.
     """
     df = pd.DataFrame(results)
     highest_per = df.sort_values("per", ascending=False).iloc[0]
     problem_summary = SpeechProblemClassifier.classify_problems(results)
-    return df, highest_per, problem_summary
+
+    # Aggregate phoneme counts and errors for the entire sentence
+    total_phonemes = 0
+    total_errors = 0
+
+    for word in results:
+        total_phonemes += word["total_phonemes"]
+        total_errors += word["total_errors"]
+
+    # Calculate sentence-level PER
+    sentence_per = total_errors / total_phonemes if total_phonemes > 0 else 0.0
+
+    # Return sentence-level PER along with existing results
+    return df, sentence_per, {
+        "total_phonemes": total_phonemes,
+        "total_errors": total_errors,
+        "sentence_per": sentence_per,
+        "problem_summary": problem_summary,
+    }
 
 if __name__ == "__main__":
     import librosa
@@ -323,10 +347,10 @@ if __name__ == "__main__":
     for result in results:
         print(result)
     print()
-    df, highest_per, problem_summary = analyze_results(results)
+    df, sentence_per, summary = analyze_results(results)
     print(df)
-    print(highest_per)
+    print(f"Sentence PER: {sentence_per:.4f}")
+    print(summary)
 
-    print({"pronunciation": results, "highest_per_word": highest_per.to_dict()})
-
-    print("Most Common Problems:", problem_summary)
+    print({"pronunciation": results, "highest_per_word": summary})
+    print("Most Common Problems:", summary["problem_summary"])

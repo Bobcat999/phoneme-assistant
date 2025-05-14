@@ -1,0 +1,200 @@
+Key,Original Sentence,Altered Sentence,Original Phonemes,Altered Phonemes,PER
+1,My mom looks at a blue cup,My mom looks at a blue cub,maɪ mɑm lʊks æt ə blu kəp,maɪ mɑm lʊks æt ə blu kəb,0.14285714285714285
+2,My mom likes a fun game,My mom likes a fun game,maɪ mɑm laɪks ə fən geɪm,maɪ mɑm laɪks ə fən geɪm,0.0
+3,The boy saw a shop,The boy saw a sop,ðə bɔɪ sɔ ə ʃɑp,ðə bɔɪ sɔ ə sɑp,0.2
+4,The boy jumps on a gift,The boy jumps on a giff,ðə bɔɪ ʤəmps ɔn ə gɪft,ðə bɔɪ ʤəmps ɔn ə gɪf,0.16666666666666666
+5,The boy has the car,The boy has the cah,ðə bɔɪ həz ðə kɑr,ðə bɔɪ həz ðə cah,0.2
+6,My mom jumps on a blue cup,My mom jumps on a blue cup,maɪ mɑm ʤəmps ɔn ə blu kəp,maɪ mɑm ʤəmps ɔn ə blu kəp,0.0
+7,The boy jumps on a bath,The boy jumps on a bath,ðə bɔɪ ʤəmps ɔn ə bæθ,ðə bɔɪ ʤəmps ɔn ə bæθ,0.0
+8,The cat saw a ship,The cat saw a sip,ðə kæt sɔ ə ʃɪp,ðə kæt sɔ ə sɪp,0.2
+9,A dog saw the sun,A dog saw the sun,ə dɔg sɔ ðə sən,ə dɔg sɔ ðə sən,0.0
+10,She eats a red hat,She eats a red had,ʃi its ə rɛd hæt,ʃi its ə rɛd hæd,0.2
+11,Dad looks at the zoo,Dad looks at the zoo,dæd lʊks æt ðə zu,dæd lʊks æt ðə zu,0.0
+12,I likes the sun,I likes the fun,aɪ laɪks ðə sən,aɪ laɪks ðə fən,0.25
+13,The girl runs to a gift,The girl runs to a giff,ðə gərl rənz tɪ ə gɪft,ðə gərl rənz tɪ ə gɪf,0.16666666666666666
+14,We jumps on a gift,We jumps on a gift,wi ʤəmps ɔn ə gɪft,wi ʤəmps ɔn ə gɪft,0.0
+15,She looks at the sun,She looks at the sun,ʃi lʊks æt ðə sən,ʃi lʊks æt ðə sən,0.0
+16,I runs to the sun,I runs to the sun,aɪ rənz tɪ ðə sən,aɪ rənz tɪ ðə sən,0.0
+17,The cat likes the sun,The cat likes the sun,ðə kæt laɪks ðə sən,ðə kæt laɪks ðə sən,0.0
+18,We eats the zoo,We eats the zoo,wi its ðə zu,wi its ðə zu,0.0
+19,We likes a fun game,We likes a fun game,wi laɪks ə fən geɪm,wi laɪks ə fən geɪm,0.0
+20,The boy likes a new pen,The boy likes a new pen,ðə bɔɪ laɪks ə nu pɛn,ðə bɔɪ laɪks ə nu pɛn,0.0
+21,She has a book,She has a book,ʃi həz ə bʊk,ʃi həz ə bʊk,0.0
+22,A dog has a new pen,A dog has a new pen,ə dɔg həz ə nu pɛn,ə dɔg həz ə nu pɛn,0.0
+23,He eats a new pen,He eats a new pen,hi its ə nu pɛn,hi its ə nu pɛn,0.0
+24,The girl looks at a new pen,The girl looks at a new pen,ðə gərl lʊks æt ə nu pɛn,ðə gərl lʊks æt ə nu pɛn,0.0
+25,The girl looks at the sun,The girl looks at the sun,ðə gərl lʊks æt ðə sən,ðə gərl lʊks æt ðə sən,0.0
+26,The cat jumps on a bath,The cat jumps on a bath,ðə kæt ʤəmps ɔn ə bæθ,ðə kæt ʤəmps ɔn ə bæθ,0.0
+27,I found a green frog,I found a green frog,aɪ faʊnd ə grin frɑg,aɪ faʊnd ə grin frɑg,0.0
+28,The girl carries a bath,The girl carries a bath,ðə gərl ˈkɛriz ə bæθ,ðə gərl ˈkɛriz ə bæθ,0.0
+29,The cat has the car,The cap has the car,ðə kæt həz ðə kɑr,ðə kæp həz ðə kɑr,0.2
+30,The girl eats the sun,The girl eats the sun,ðə gərl its ðə sən,ðə gərl its ðə sən,0.0
+31,A dog looks at a red hat,A bog looks at a red hat,ə dɔg lʊks æt ə rɛd hæt,ə bɔg lʊks æt ə rɛd hæt,0.14285714285714285
+32,The girl eats a fun game,The girl eats a fun game,ðə gərl its ə fən geɪm,ðə gərl its ə fən geɪm,0.0
+33,A dog runs to a red hat,A dog runs to a red hat,ə dɔg rənz tɪ ə rɛd hæt,ə dɔg rənz tɪ ə rɛd hæt,0.0
+34,He saw a ship,He saw a ship,hi sɔ ə ʃɪp,hi sɔ ə ʃɪp,0.0
+35,A dog makes a shop,A bog makes a shop,ə dɔg meɪks ə ʃɑp,ə bɔg meɪks ə ʃɑp,0.2
+36,A dog found a fun game,A bog found a fun game,ə dɔg faʊnd ə fən geɪm,ə bɔg faʊnd ə fən geɪm,0.16666666666666666
+37,He makes the big rug,He makes the big bug,hi meɪks ðə bɪg rəg,hi meɪks ðə bɪg bəg,0.2
+38,He jumps on the zoo,He jumps on the zoo,hi ʤəmps ɔn ðə zu,hi ʤəmps ɔn ðə zu,0.0
+39,The boy saw the sun,The boy saw the fun,ðə bɔɪ sɔ ðə sən,ðə bɔɪ sɔ ðə fən,0.2
+40,We jumps on the sun,We jumps on the sun,wi ʤəmps ɔn ðə sən,wi ʤəmps ɔn ðə sən,0.0
+41,Dad eats a fun game,Dad eats a fun game,dæd its ə fən geɪm,dæd its ə fən geɪm,0.0
+42,The boy saw the big rug,The boy saw the big rug,ðə bɔɪ sɔ ðə bɪg rəg,ðə bɔɪ sɔ ðə bɪg rəg,0.0
+43,I carries the bag,I carries the bag,aɪ ˈkɛriz ðə bæg,aɪ ˈkɛriz ðə bæg,0.0
+44,He has a blue cup,He has a blue cub,hi həz ə blu kəp,hi həz ə blu kəb,0.2
+45,I makes a book,I makes a boop,aɪ meɪks ə bʊk,aɪ meɪks ə bup,0.25
+46,She found a bath,She found a bath,ʃi faʊnd ə bæθ,ʃi faʊnd ə bæθ,0.0
+47,Dad eats a red hat,Dad eats a red hat,dæd its ə rɛd hæt,dæd its ə rɛd hæt,0.0
+48,The boy saw a bath,The boy saw a bat,ðə bɔɪ sɔ ə bæθ,ðə bɔɪ sɔ ə bæt,0.2
+49,She carries a shop,She carries a sheap,ʃi ˈkɛriz ə ʃɑp,ʃi ˈkɛriz ə sheap,0.25
+50,I looks at a book,I looks at a boop,aɪ lʊks æt ə bʊk,aɪ lʊks æt ə bup,0.2
+51,I looks at a shop,I looks at a sop,aɪ lʊks æt ə ʃɑp,aɪ lʊks æt ə sɑp,0.2
+52,The cat eats a ship,The cap eats a ship,ðə kæt its ə ʃɪp,ðə kæp its ə ʃɪp,0.2
+53,I saw a small fish,I saw a small fish,aɪ sɔ ə smɔl fɪʃ,aɪ sɔ ə smɔl fɪʃ,0.0
+54,A dog carries a shop,A bog carries a shop,ə dɔg ˈkɛriz ə ʃɑp,ə bɔg ˈkɛriz ə ʃɑp,0.2
+55,We looks at the big rug,We looks at the big rug,wi lʊks æt ðə bɪg rəg,wi lʊks æt ðə bɪg rəg,0.0
+56,Dad found a red hat,Dad found a red hat,dæd faʊnd ə rɛd hæt,dæd faʊnd ə rɛd hæt,0.0
+57,She likes a new pen,She likes a new pen,ʃi laɪks ə nu pɛn,ʃi laɪks ə nu pɛn,0.0
+58,We looks at the bag,We looks at the bag,wi lʊks æt ðə bæg,wi lʊks æt ðə bæg,0.0
+59,Dad saw the bird,Dad saw the bird,dæd sɔ ðə bərd,dæd sɔ ðə bərd,0.0
+60,The boy looks at a fun game,The boy looks at a fun game,ðə bɔɪ lʊks æt ə fən geɪm,ðə bɔɪ lʊks æt ə fən geɪm,0.0
+61,My mom has a shop,My mom has a shop,maɪ mɑm həz ə ʃɑp,maɪ mɑm həz ə ʃɑp,0.0
+62,A dog jumps on a shop,A dog jumps on a sheap,ə dɔg ʤəmps ɔn ə ʃɑp,ə dɔg ʤəmps ɔn ə sheap,0.16666666666666666
+63,My mom found a small fish,My mom found a small fiss,maɪ mɑm faʊnd ə smɔl fɪʃ,maɪ mɑm faʊnd ə smɔl fɪs,0.16666666666666666
+64,A dog found the zoo,A bog found the zoo,ə dɔg faʊnd ðə zu,ə bɔg faʊnd ðə zu,0.2
+65,The cat saw a gift,The cat saw a giff,ðə kæt sɔ ə gɪft,ðə kæt sɔ ə gɪf,0.2
+66,My mom looks at his fork,My mom looks at his fok,maɪ mɑm lʊks æt hɪz fɔrk,maɪ mɑm lʊks æt hɪz fok,0.16666666666666666
+67,I saw the sun,I saw the fun,aɪ sɔ ðə sən,aɪ sɔ ðə fən,0.25
+68,The cat looks at a shop,The cat looks at a shop,ðə kæt lʊks æt ə ʃɑp,ðə kæt lʊks æt ə ʃɑp,0.0
+69,We likes the big rug,We likes the big rug,wi laɪks ðə bɪg rəg,wi laɪks ðə bɪg rəg,0.0
+70,I jumps on a fun game,I jumps on a fun game,aɪ ʤəmps ɔn ə fən geɪm,aɪ ʤəmps ɔn ə fən geɪm,0.0
+71,The girl saw the bag,The girl saw the bag,ðə gərl sɔ ðə bæg,ðə gərl sɔ ðə bæg,0.0
+72,The girl found a small fish,The girl found a small fiss,ðə gərl faʊnd ə smɔl fɪʃ,ðə gərl faʊnd ə smɔl fɪs,0.16666666666666666
+73,My mom looks at a small fish,My mom looks at a small fiss,maɪ mɑm lʊks æt ə smɔl fɪʃ,maɪ mɑm lʊks æt ə smɔl fɪs,0.14285714285714285
+74,He jumps on the sun,He jumps on the fun,hi ʤəmps ɔn ðə sən,hi ʤəmps ɔn ðə fən,0.2
+75,I carries a green frog,I carries a green frog,aɪ ˈkɛriz ə grin frɑg,aɪ ˈkɛriz ə grin frɑg,0.0
+76,Dad jumps on a gift,Dad jumps on a gift,dæd ʤəmps ɔn ə gɪft,dæd ʤəmps ɔn ə gɪft,0.0
+77,He likes a bath,He likes a bath,hi laɪks ə bæθ,hi laɪks ə bæθ,0.0
+78,My mom likes a ship,My mom likes a sip,maɪ mɑm laɪks ə ʃɪp,maɪ mɑm laɪks ə sɪp,0.2
+79,I saw a book,I saw a boop,aɪ sɔ ə bʊk,aɪ sɔ ə bup,0.25
+80,Dad jumps on a ship,Dad jumps on a ship,dæd ʤəmps ɔn ə ʃɪp,dæd ʤəmps ɔn ə ʃɪp,0.0
+81,Dad runs to his fork,Dad funs to his fork,dæd rənz tɪ hɪz fɔrk,dæd fənz tɪ hɪz fɔrk,0.2
+82,I carries a blue cup,I cahries a blue cup,aɪ ˈkɛriz ə blu kəp,aɪ cahries ə blu kəp,0.2
+83,My mom jumps on a new pen,My mom jumps on a new pen,maɪ mɑm ʤəmps ɔn ə nu pɛn,maɪ mɑm ʤəmps ɔn ə nu pɛn,0.0
+84,The girl eats the box,The girl eats the box,ðə gərl its ðə bɑks,ðə gərl its ðə bɑks,0.0
+85,I found a fun game,I found a fun game,aɪ faʊnd ə fən geɪm,aɪ faʊnd ə fən geɪm,0.0
+86,The boy looks at a gift,The boy looks at a giff,ðə bɔɪ lʊks æt ə gɪft,ðə bɔɪ lʊks æt ə gɪf,0.16666666666666666
+87,A dog saw a gift,A bog saw a gift,ə dɔg sɔ ə gɪft,ə bɔg sɔ ə gɪft,0.2
+88,I eats a blue cup,I eats a blue cup,aɪ its ə blu kəp,aɪ its ə blu kəp,0.0
+89,We saw the sun,We saw the sun,wi sɔ ðə sən,wi sɔ ðə sən,0.0
+90,I runs to a bath,I runs to a bath,aɪ rənz tɪ ə bæθ,aɪ rənz tɪ ə bæθ,0.0
+91,The cat found a bath,The cat found a bath,ðə kæt faʊnd ə bæθ,ðə kæt faʊnd ə bæθ,0.0
+92,The cat runs to the big rug,The cat runs to the big bug,ðə kæt rənz tɪ ðə bɪg rəg,ðə kæt rənz tɪ ðə bɪg bəg,0.14285714285714285
+93,The girl looks at the bird,The girl looks at the bird,ðə gərl lʊks æt ðə bərd,ðə gərl lʊks æt ðə bərd,0.0
+94,My mom makes a shop,My mom makes a sheap,maɪ mɑm meɪks ə ʃɑp,maɪ mɑm meɪks ə sheap,0.2
+95,The cat makes a shop,The cat makes a shop,ðə kæt meɪks ə ʃɑp,ðə kæt meɪks ə ʃɑp,0.0
+96,Dad runs to a ship,Dad runs to a ship,dæd rənz tɪ ə ʃɪp,dæd rənz tɪ ə ʃɪp,0.0
+97,We likes a bath,We likes a bath,wi laɪks ə bæθ,wi laɪks ə bæθ,0.0
+98,Dad makes a bath,Dad makes a bath,dæd meɪks ə bæθ,dæd meɪks ə bæθ,0.0
+99,She eats the bag,She eats the bag,ʃi its ðə bæg,ʃi its ðə bæg,0.0
+100,The girl carries the bird,The girl carries the bird,ðə gərl ˈkɛriz ðə bərd,ðə gərl ˈkɛriz ðə bərd,0.0
+101,The cat has a shop,The cat has a sheap,ðə kæt həz ə ʃɑp,ðə kæt həz ə sheap,0.2
+102,He eats a gift,He eats a giff,hi its ə gɪft,hi its ə gɪf,0.25
+103,The girl found a fun game,The girl found a fun game,ðə gərl faʊnd ə fən geɪm,ðə gərl faʊnd ə fən geɪm,0.0
+104,A dog makes a gift,A dog makes a giff,ə dɔg meɪks ə gɪft,ə dɔg meɪks ə gɪf,0.2
+105,The boy eats a book,The boy eats a book,ðə bɔɪ its ə bʊk,ðə bɔɪ its ə bʊk,0.0
+106,She likes a cake,She likes a cake,ʃi laɪks ə keɪk,ʃi laɪks ə keɪk,0.0
+107,He carries his fork,He carries his fork,hi ˈkɛriz hɪz fɔrk,hi ˈkɛriz hɪz fɔrk,0.0
+108,He likes the big rug,He likes the big rug,hi laɪks ðə bɪg rəg,hi laɪks ðə bɪg rəg,0.0
+109,He found the sun,He found the sun,hi faʊnd ðə sən,hi faʊnd ðə sən,0.0
+110,She carries a ship,She carries a ship,ʃi ˈkɛriz ə ʃɪp,ʃi ˈkɛriz ə ʃɪp,0.0
+111,He has the sun,He has the fun,hi həz ðə sən,hi həz ðə fən,0.25
+112,The boy makes the zoo,The boy makes the zoo,ðə bɔɪ meɪks ðə zu,ðə bɔɪ meɪks ðə zu,0.0
+113,We jumps on the zoo,We jumps on the zoo,wi ʤəmps ɔn ðə zu,wi ʤəmps ɔn ðə zu,0.0
+114,My mom runs to the zoo,My mom funs to the zoo,maɪ mɑm rənz tɪ ðə zu,maɪ mɑm fənz tɪ ðə zu,0.16666666666666666
+115,We jumps on a shop,We jumps on a shop,wi ʤəmps ɔn ə ʃɑp,wi ʤəmps ɔn ə ʃɑp,0.0
+116,The cat carries a shop,The cat carries a shop,ðə kæt ˈkɛriz ə ʃɑp,ðə kæt ˈkɛriz ə ʃɑp,0.0
+117,The cat carries the big rug,The cat carries the big bug,ðə kæt ˈkɛriz ðə bɪg rəg,ðə kæt ˈkɛriz ðə bɪg bəg,0.16666666666666666
+118,The boy runs to the box,The boy funs to the box,ðə bɔɪ rənz tɪ ðə bɑks,ðə bɔɪ fənz tɪ ðə bɑks,0.16666666666666666
+119,The girl carries a fun game,The girl carries a fun game,ðə gərl ˈkɛriz ə fən geɪm,ðə gərl ˈkɛriz ə fən geɪm,0.0
+120,I makes a ship,I makes a sip,aɪ meɪks ə ʃɪp,aɪ meɪks ə sɪp,0.25
+121,I looks at the sun,I looks at the sun,aɪ lʊks æt ðə sən,aɪ lʊks æt ðə sən,0.0
+122,The cat eats a book,The cat eats a book,ðə kæt its ə bʊk,ðə kæt its ə bʊk,0.0
+123,The boy runs to a green frog,The boy runs to a green frog,ðə bɔɪ rənz tɪ ə grin frɑg,ðə bɔɪ rənz tɪ ə grin frɑg,0.0
+124,A dog saw a shop,A dog saw a shop,ə dɔg sɔ ə ʃɑp,ə dɔg sɔ ə ʃɑp,0.0
+125,Dad jumps on his fork,Dad jumps on his fok,dæd ʤəmps ɔn hɪz fɔrk,dæd ʤəmps ɔn hɪz fok,0.2
+126,He likes a red hat,He likes a red had,hi laɪks ə rɛd hæt,hi laɪks ə rɛd hæd,0.2
+127,He saw a new pen,He saw a new pan,hi sɔ ə nu pɛn,hi sɔ ə nu pæn,0.2
+128,Dad likes the bird,Dad likes the bird,dæd laɪks ðə bərd,dæd laɪks ðə bərd,0.0
+129,She runs to a book,She funs to a book,ʃi rənz tɪ ə bʊk,ʃi fənz tɪ ə bʊk,0.2
+130,The boy looks at the bag,The boy looks at the bag,ðə bɔɪ lʊks æt ðə bæg,ðə bɔɪ lʊks æt ðə bæg,0.0
+131,We runs to the bag,We funs to the bag,wi rənz tɪ ðə bæg,wi fənz tɪ ðə bæg,0.2
+132,He runs to the car,He runs to the cah,hi rənz tɪ ðə kɑr,hi rənz tɪ ðə cah,0.2
+133,The girl jumps on a red hat,The girl jumps on a red had,ðə gərl ʤəmps ɔn ə rɛd hæt,ðə gərl ʤəmps ɔn ə rɛd hæd,0.14285714285714285
+134,He saw the box,He saw the box,hi sɔ ðə bɑks,hi sɔ ðə bɑks,0.0
+135,She likes a blue cup,She likes a blue cub,ʃi laɪks ə blu kəp,ʃi laɪks ə blu kəb,0.2
+136,My mom saw the bird,My mom saw the bird,maɪ mɑm sɔ ðə bərd,maɪ mɑm sɔ ðə bərd,0.0
+137,She carries a green frog,She carries a green frog,ʃi ˈkɛriz ə grin frɑg,ʃi ˈkɛriz ə grin frɑg,0.0
+138,Original Sentence,Altered Sentence,ərˈɪʤənəl ˈsɛntəns,ˈɔltərd ˈsɛntəns,0.5
+139,My mom found the car,My mom found the car,maɪ mɑm faʊnd ðə kɑr,maɪ mɑm faʊnd ðə kɑr,0.0
+140,She saw the bird,She saw the bud,ʃi sɔ ðə bərd,ʃi sɔ ðə bəd,0.25
+141,The cat carries a small fish,The cap carries a small fish,ðə kæt ˈkɛriz ə smɔl fɪʃ,ðə kæp ˈkɛriz ə smɔl fɪʃ,0.16666666666666666
+142,The girl likes a ship,The girl likes a sip,ðə gərl laɪks ə ʃɪp,ðə gərl laɪks ə sɪp,0.2
+143,A dog carries a ship,A dog cahries a ship,ə dɔg ˈkɛriz ə ʃɪp,ə dɔg cahries ə ʃɪp,0.2
+144,A dog looks at the sun,A dog looks at the fun,ə dɔg lʊks æt ðə sən,ə dɔg lʊks æt ðə fən,0.16666666666666666
+145,Dad runs to the box,Dad runs to the fox,dæd rənz tɪ ðə bɑks,dæd rənz tɪ ðə fɑks,0.2
+146,We saw a green frog,We saw a green frog,wi sɔ ə grin frɑg,wi sɔ ə grin frɑg,0.0
+147,The cat runs to a fun game,The cat funs to a fun game,ðə kæt rənz tɪ ə fən geɪm,ðə kæt fənz tɪ ə fən geɪm,0.14285714285714285
+148,A dog eats the bird,A bog eats the bird,ə dɔg its ðə bərd,ə bɔg its ðə bərd,0.2
+149,She makes a red hat,She makes a red hat,ʃi meɪks ə rɛd hæt,ʃi meɪks ə rɛd hæt,0.0
+150,She found a green frog,She found a green frog,ʃi faʊnd ə grin frɑg,ʃi faʊnd ə grin frɑg,0.0
+151,He found the bag,He found the bag,hi faʊnd ðə bæg,hi faʊnd ðə bæg,0.0
+152,She jumps on a red hat,She jumps on a red had,ʃi ʤəmps ɔn ə rɛd hæt,ʃi ʤəmps ɔn ə rɛd hæd,0.16666666666666666
+153,The cat looks at a blue cup,The cat looks at a blue cup,ðə kæt lʊks æt ə blu kəp,ðə kæt lʊks æt ə blu kəp,0.0
+154,The boy makes a bath,The boy makes a bat,ðə bɔɪ meɪks ə bæθ,ðə bɔɪ meɪks ə bæt,0.2
+155,The girl carries a red hat,The girl carries a red had,ðə gərl ˈkɛriz ə rɛd hæt,ðə gərl ˈkɛriz ə rɛd hæd,0.16666666666666666
+156,A dog jumps on the bird,A dog jumps on the bird,ə dɔg ʤəmps ɔn ðə bərd,ə dɔg ʤəmps ɔn ðə bərd,0.0
+157,He runs to the big rug,He runs to the big rug,hi rənz tɪ ðə bɪg rəg,hi rənz tɪ ðə bɪg rəg,0.0
+158,The boy makes a ship,The boy makes a sip,ðə bɔɪ meɪks ə ʃɪp,ðə bɔɪ meɪks ə sɪp,0.2
+159,Dad runs to a new pen,Dad runs to a new pen,dæd rənz tɪ ə nu pɛn,dæd rənz tɪ ə nu pɛn,0.0
+160,She makes a bath,She makes a bath,ʃi meɪks ə bæθ,ʃi meɪks ə bæθ,0.0
+161,He makes a shop,He makes a sheap,hi meɪks ə ʃɑp,hi meɪks ə sheap,0.25
+162,The boy found a green frog,The boy found a green frog,ðə bɔɪ faʊnd ə grin frɑg,ðə bɔɪ faʊnd ə grin frɑg,0.0
+163,I saw a green frog,I saw a green frog,aɪ sɔ ə grin frɑg,aɪ sɔ ə grin frɑg,0.0
+164,The boy likes a fun game,The boy likes a fun game,ðə bɔɪ laɪks ə fən geɪm,ðə bɔɪ laɪks ə fən geɪm,0.0
+165,My mom saw a green frog,My mom saw a green frog,maɪ mɑm sɔ ə grin frɑg,maɪ mɑm sɔ ə grin frɑg,0.0
+166,Dad likes the car,Dad likes the car,dæd laɪks ðə kɑr,dæd laɪks ðə kɑr,0.0
+167,The cat jumps on a blue cup,The cap jumps on a blue cup,ðə kæt ʤəmps ɔn ə blu kəp,ðə kæp ʤəmps ɔn ə blu kəp,0.14285714285714285
+168,We carries a blue cup,We carries a blue cup,wi ˈkɛriz ə blu kəp,wi ˈkɛriz ə blu kəp,0.0
+169,I saw a blue cup,I saw a blue cub,aɪ sɔ ə blu kəp,aɪ sɔ ə blu kəb,0.2
+170,We likes the bird,We likes the bud,wi laɪks ðə bərd,wi laɪks ðə bəd,0.25
+171,The boy likes the big rug,The boy likes the big bug,ðə bɔɪ laɪks ðə bɪg rəg,ðə bɔɪ laɪks ðə bɪg bəg,0.16666666666666666
+172,I has a cake,I has a cake,aɪ həz ə keɪk,aɪ həz ə keɪk,0.0
+173,The cat looks at a book,The cat looks at a boop,ðə kæt lʊks æt ə bʊk,ðə kæt lʊks æt ə bup,0.16666666666666666
+174,She runs to the box,She runs to the box,ʃi rənz tɪ ðə bɑks,ʃi rənz tɪ ðə bɑks,0.0
+175,The boy has a ship,The boy has a ship,ðə bɔɪ həz ə ʃɪp,ðə bɔɪ həz ə ʃɪp,0.0
+176,The cat jumps on a shop,The cat jumps on a shop,ðə kæt ʤəmps ɔn ə ʃɑp,ðə kæt ʤəmps ɔn ə ʃɑp,0.0
+177,The boy found the bag,The boy found the bag,ðə bɔɪ faʊnd ðə bæg,ðə bɔɪ faʊnd ðə bæg,0.0
+178,We has his fork,We has his fok,wi həz hɪz fɔrk,wi həz hɪz fok,0.25
+179,We makes a ship,We makes a sip,wi meɪks ə ʃɪp,wi meɪks ə sɪp,0.25
+180,A dog carries a new pen,A dog cahries a new pen,ə dɔg ˈkɛriz ə nu pɛn,ə dɔg cahries ə nu pɛn,0.16666666666666666
+181,My mom carries a green frog,My mom carries a green frog,maɪ mɑm ˈkɛriz ə grin frɑg,maɪ mɑm ˈkɛriz ə grin frɑg,0.0
+182,I makes a gift,I makes a gift,aɪ meɪks ə gɪft,aɪ meɪks ə gɪft,0.0
+183,She runs to a gift,She runs to a gift,ʃi rənz tɪ ə gɪft,ʃi rənz tɪ ə gɪft,0.0
+184,Dad saw the bag,Dad saw the bag,dæd sɔ ðə bæg,dæd sɔ ðə bæg,0.0
+185,The cat likes a red hat,The cat likes a red had,ðə kæt laɪks ə rɛd hæt,ðə kæt laɪks ə rɛd hæd,0.16666666666666666
+186,The boy runs to the car,The boy runs to the car,ðə bɔɪ rənz tɪ ðə kɑr,ðə bɔɪ rənz tɪ ðə kɑr,0.0
+187,A dog saw a book,A dog saw a boop,ə dɔg sɔ ə bʊk,ə dɔg sɔ ə bup,0.2
+188,Dad eats the box,Dad eats the fox,dæd its ðə bɑks,dæd its ðə fɑks,0.25
+189,A dog has the sun,A dog has the fun,ə dɔg həz ðə sən,ə dɔg həz ðə fən,0.2
+190,The cat has a red hat,The cap has a red hat,ðə kæt həz ə rɛd hæt,ðə kæp həz ə rɛd hæt,0.16666666666666666
+191,My mom saw a red hat,My mom saw a red hot,maɪ mɑm sɔ ə rɛd hæt,maɪ mɑm sɔ ə rɛd hɑt,0.16666666666666666
+192,She likes the sun,She likes the sun,ʃi laɪks ðə sən,ʃi laɪks ðə sən,0.0
+193,The girl jumps on a fun game,The girl jumps on a fun game,ðə gərl ʤəmps ɔn ə fən geɪm,ðə gərl ʤəmps ɔn ə fən geɪm,0.0
+194,Dad jumps on a bath,Dad jumps on a bath,dæd ʤəmps ɔn ə bæθ,dæd ʤəmps ɔn ə bæθ,0.0
+195,The boy looks at a shop,The boy looks at a sop,ðə bɔɪ lʊks æt ə ʃɑp,ðə bɔɪ lʊks æt ə sɑp,0.16666666666666666
+196,A dog makes a fun game,A bog makes a fun game,ə dɔg meɪks ə fən geɪm,ə bɔg meɪks ə fən geɪm,0.16666666666666666
+197,He carries the big rug,He carries the big bug,hi ˈkɛriz ðə bɪg rəg,hi ˈkɛriz ðə bɪg bəg,0.2
+198,The girl carries the big rug,The girl carries the big rug,ðə gərl ˈkɛriz ðə bɪg rəg,ðə gərl ˈkɛriz ðə bɪg rəg,0.0
+199,I has his fork,I has his fork,aɪ həz hɪz fɔrk,aɪ həz hɪz fɔrk,0.0

@@ -1,15 +1,17 @@
 #%%
-from dataset_loader import SpeechDatasetLoader
+from self_dataset_loader import SelfSpeechDatasetLoader
 from phoneme_extractor import PhonemeExtractor
 from word_extractor import WordExtractor
 from process_audio import process_audio_array, analyze_results
 from grapheme_to_phoneme import grapheme_to_phoneme
+from evaluation.accuracy_metrics import compute_phoneme_error_rate
 import pandas as pd
 import math
 import matplotlib.pyplot as plt  # changed
+import time  # added
 
 #%%
-loader = SpeechDatasetLoader((0,10), True)
+loader = SelfSpeechDatasetLoader()
 phoneme_model = PhonemeExtractor()
 word_model = WordExtractor()
 #%%
@@ -17,7 +19,7 @@ word_model = WordExtractor()
 # ACCURACY IS MEASURED AS THE CORRELATION COEFFICIENT BETWEEN THE DATABASE ACCURACY AND THE MODEL PER
 
 class MeasureAccuracy:
-    def __init__(self, dataset = SpeechDatasetLoader((0,10)), phoneme_model = PhonemeExtractor(), word_model = WordExtractor()):
+    def __init__(self, dataset, phoneme_model, word_model):
         self.dataset = dataset
         self.phoneme_model = phoneme_model
         self.word_model = word_model
@@ -25,12 +27,28 @@ class MeasureAccuracy:
     def compare_indexes(self, index_range: range, merged_list=None) -> tuple[pd.DataFrame, float, float, float]:
         if merged_list is None:
             all_results = []
+            calc_times = []
             for idx in index_range:
                 try:
-                    df, _ = self.compare_index(idx)
+                    df, _, calc_time = self.compare_index(idx)
                     all_results.append(df)
+                    calc_times.append(calc_time)
                 except Exception as e:
-                    print(f"Skipping index {idx} due to error: {e}")
+                    # import traceback
+                    # import sys
+                    # # Get exception information
+                    # exc_type, exc_value, exc_traceback = sys.exc_info()
+
+                    # # Print the exception type and value
+                    # print(f"Error Type: {exc_type.__name__}")
+                    # print(f"Error Value: {exc_value}")
+
+                    # # Print the formatted traceback
+                    # print("Traceback:")
+                    # traceback.print_tb(exc_traceback, file=sys.stdout)
+
+                    print(f"Skipping index {idx} due to error: {e.args}")
+                    print(e)
 
             if not all_results:
                 return pd.DataFrame(), 0.0, 0.0, 0.0
@@ -51,7 +69,9 @@ class MeasureAccuracy:
         # correlation coefficient
         corr = self.correlation_coefficient(model_per_vals, gt_per_vals)
 
-        return merged, mae, mse, corr
+        average_calc_time = sum(calc_times)/len(calc_times)
+
+        return merged, mae, mse, corr, average_calc_time
 
     def compare_index(self, index: int) -> tuple[pd.DataFrame, float]:
         """Function that compares our model to the  
@@ -62,49 +82,64 @@ class MeasureAccuracy:
         Returns:
             tuple[pd.DataFrame, float]: DataFrame and correlation coefficient
         """
+        start_time = time.time()  # start timing
+
         # gets the item from our dataset
-        item = self.dataset.get_item(index)
+        item = self.dataset[index]
 
         # gets the audio
-        audio_array = item["audio"]["array"]
+        audio_array = self.dataset.get_audio_bytes(index)
 
         # the text we were supposed to say
-        text = item["text"]
+        text = item["original_sentence"]
         ground_truth = grapheme_to_phoneme(text.lower()) 
 
         # use our model to process and analyze our results
         results = process_audio_array(ground_truth, audio_array, 16000, phoneme_extraction_model=self.phoneme_model, word_extraction_model=self.word_model)
-        df, _, _ = analyze_results(results)
+        df, sentence_per, _ = analyze_results(results)
 
-        # construct our output dataframe
-        results = []
+        # # construct our output dataframe
+        # results = []
 
-        # compare our resulting per per word to that of the database
-        word_info = item.get("words", [])
-        clean_word_info = self.clean_dataset_data(word_info)  # changed
-        per = []
-        if word_info:
-            for i, w in enumerate(clean_word_info):
-                ground_truth_per = len(w["mispronunciations"]) / len(w["phones"])
-                if ground_truth_per == 0 or w["accuracy"] == 10:
-                    continue  # Skip words with ground_truth_per == 0 or accuracy == 10
-                print("Word info:", w)
-                print("Model info:", df.iloc[i])
-                model_per = df.iloc[i]["per"]
-                results.append({
-                    "word": w["text"],
-                    "model_per": model_per,
-                    "ground_truth_accuracy": w["accuracy"],
-                    "ground_truth_per": ground_truth_per,
-                })
+        # # compare our resulting per per word to that of the database
+        # word_info = [{ #get all of the data for each word
+        #     "word": w,
+        #     "per": compute_phoneme_error_rate(o,a)
+        # } for w,o,a in zip(item["original_sentence"].split(), item["original_phonemes"].split(), item["altered_phonemes"].split())]
 
-        # turn results into a dataframe
-        results = pd.DataFrame(results)
+        # per = []
+        # if word_info:
+        #     for i, w in enumerate(word_info):
+        #         ground_truth_per = w["per"]
+        #         print("Word info:", w)
+        #         print("Model info:", df.iloc[i])
+        #         model_per = df.iloc[i]["per"]
+        #         results.append({
+        #             "word": w["word"],
+        #             "model_per": model_per,
+        #             "ground_truth_per": ground_truth_per,
+        #         })
 
-        # figure out correlation coef of accuracy and per
-        correlation_coefficient = self.correlation_coefficient(results["model_per"].to_list(), results["ground_truth_accuracy"].to_list())
+        # # turn results into a dataframe
+        # results = pd.DataFrame(results)
 
-        return results, correlation_coefficient
+        #rethink validation strat
+
+        #validation done on per from sentence
+        ground_truth_per = item["per"]
+
+        # # figure out correlation coef of accuracy and per
+        # correlation_coefficient = self.correlation_coefficient(results["model_per"].to_list(), results["ground_truth_per"].to_list())
+        correlation_coefficient = 0.0
+        end_time = time.time()  # end timing
+        calculation_time = end_time - start_time
+
+        results = pd.DataFrame({
+            "model_per": [float(sentence_per)],
+            "ground_truth_per": [float(ground_truth_per)]
+        })
+
+        return results, correlation_coefficient, calculation_time
 
     def correlation_coefficient(self, x: list, y: list) -> float:
         """Finds the correlation coefficient between two same sized lists
@@ -130,33 +165,15 @@ class MeasureAccuracy:
             return 0.0
 
         return numerator / denominator
-
-    def clean_dataset_data(self, data: list) -> list:
-        """Converts dataset data into a usable form
-
-        Args:
-            data (list): dataframe with a format similar to our processed audio
-        """
-        # data is a list of word-level dictionaries
-        records = []
-        for entry in data:
-            records.append({
-                "text": entry["text"],
-                "accuracy": entry["accuracy"],
-                "phones": entry["phones"],
-                "mispronunciations": entry["mispronunciations"],
-            })
-        return records
-    
 #%%
-accuracy = MeasureAccuracy(dataset=loader, phoneme_model=phoneme_model, word_model=word_model)
-results, correlation_coefficient = accuracy.compare_index(300)
-print(results)
-print("correlation coef:", correlation_coefficient)
+# accuracy = MeasureAccuracy(dataset=loader, phoneme_model=phoneme_model, word_model=word_model)
+# results, correlation_coefficient = accuracy.compare_index(1)
+# print(results)
+# print("correlation coef:", correlation_coefficient)
 #%%
 import numpy as np
 accuracy = MeasureAccuracy(dataset=loader, phoneme_model=phoneme_model, word_model=word_model)
-results = accuracy.compare_indexes(map(int,list(np.random.randint(1,len(loader.get_dataset()[0]),50))))
+results = accuracy.compare_indexes(map(int,list(np.random.randint(1,len(loader),50))))
 #%%
 print(results)
 print("correlation coef:", results[3])
@@ -165,26 +182,6 @@ print("mean absolute error", results[1])
 
 # Import necessary libraries
 import numpy as np
-
-# Filter out invalid data for ground_truth_accuracy vs model_per
-valid_data = results[0].dropna(subset=["ground_truth_accuracy", "model_per"])
-x = valid_data["ground_truth_accuracy"]
-y = valid_data["model_per"]
-
-# Plot ground_truth_accuracy vs model_per with extended line of best fit
-plt.scatter(x, y, label="Data Points")
-coefficients = np.polyfit(x, y, 1)  # Linear fit (degree 1)
-line = np.poly1d(coefficients)
-
-# Define the range of x values to cover the entire graph
-x_range = np.linspace(0, 10, 100)  # From 0 to 10 with 100 points
-plt.plot(x_range, line(x_range), color="red", label="Best Fit Line")  # Extended line]
-plt.xlabel("Ground Truth Accuracy")
-plt.ylabel("Model PER")
-plt.xlim(0, 10)  # Ensure the x-axis goes from 0 to 10
-plt.legend()
-plt.title("Ground Truth Accuracy vs Model PER")
-plt.show()
 
 # Filter out invalid data for ground_truth_per vs model_per
 valid_data = results[0].dropna(subset=["ground_truth_per", "model_per"])
@@ -205,3 +202,5 @@ plt.xlim(0, 1)  # Ensure the x-axis goes from 0 to 1
 plt.legend()
 plt.title("Ground Truth PER vs Model PER")
 plt.show()
+
+print(f"Average Calculation time: {results[4]}")
