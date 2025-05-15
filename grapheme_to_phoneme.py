@@ -12,7 +12,7 @@ def grapheme_to_phoneme(grapheme) -> list[tuple]:
     normalized = unfiltered_phonemes.split(" ")
     output = []
     for word, phonemes in zip(grapheme.split(" "), normalized):
-        output.append((word, list(phonemes.replace("ˈ","").replace("ˌ","")))) # remove stress markers
+        output.append((word, list(phonemes.replace("ˈ","").replace("ˌ","").replace("*","").replace(",","").replace("'","")))) # remove stress markers
     return output
 
 

@@ -96,7 +96,9 @@ class MeasureAccuracy:
 
         # use our model to process and analyze our results
         results = process_audio_array(ground_truth, audio_array, 16000, phoneme_extraction_model=self.phoneme_model, word_extraction_model=self.word_model)
-        df, sentence_per, _ = analyze_results(results)
+        df, _, _, per_data = analyze_results(results)
+
+        sentence_per = per_data["sentence_per"]
 
         # # construct our output dataframe
         # results = []

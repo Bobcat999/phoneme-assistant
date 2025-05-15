@@ -10,7 +10,7 @@ import queue
 import time
 import webrtcvad
 
-def run_vad(output_file="temp_audio/output.wav", fs=16000, chunk_duration=0.03, vad_mode=3, silence_threshold=50):
+def run_vad(output_file="temp_audio/output.wav", fs=16000, chunk_duration=0.03, vad_mode=3, silence_threshold=200):
     chunk_size = int(fs * chunk_duration)
     audio_queue = queue.Queue()
     stop_event = threading.Event()

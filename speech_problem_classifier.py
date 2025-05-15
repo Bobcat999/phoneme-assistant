@@ -67,8 +67,8 @@ class SpeechProblemClassifier:
         return {
             "most_common_phoneme": most_common_phoneme[0] if most_common_phoneme else None,
             "most_common_word": most_common_word[0] if most_common_word else None,
-            "phoneme_error_counts": phoneme_errors,
-            "word_error_counts": word_errors,
+            "phoneme_error_counts": dict(phoneme_errors),
+            "word_error_counts": dict(word_errors),
             "phoneme_group_errors": phoneme_group_summary,
         }
 

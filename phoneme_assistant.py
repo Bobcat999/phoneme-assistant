@@ -10,15 +10,27 @@ from audio_recording import record_and_process_pronunciation
 from process_audio import analyze_results
 from phonecodes.phonecodes import ipa2arpabet
 import json
+import re
 
 class PhonemeAssistant:
     def __init__(self):
+        # Load the API keys
         load_dotenv()
         self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        self.reset_conversation_history()
+
+        # load the models
         self.phoneme_extractor = PhonemeExtractor()
         self.word_extractor = WordExtractor()
         self.tts = ElevenLabsAPIClient()
+
+        # load in our prompt
+        with open("gpt_prompts/gpt_prompt_v2.txt") as file:
+            lines = file.readlines()
+            content = [line for line in lines if not line.strip().startswith("//")] # // is how we are going to comments in the txt file
+            text = "".join(content)
+            self.prompt = text
+        self.reset_conversation_history()
+
     
     def reset_conversation_history(self):
         self.conversation_history = [ # Reset conversation history to just be the initial system prompt
@@ -27,7 +39,7 @@ class PhonemeAssistant:
                 "content": [
                 {
                     "type": "text",
-                    "text": "You are a world-class personalized phonics assistant designed to help elementary school children improve their pronunciation through targeted phonics practice.\n\nYou will receive an input object in the following format:\n\nInput Format:\n{\n  \"attempted_scentence\":\"<attempted_scentence>\",\n  \"pronunciation\": [\n    {\n      \"type\": \"match\",\n      \"predicted_word\": \"<predicted_word>\",\n      \"ground_truth_word\": \"<ground_truth_word>\",\n      \"phonemes\": [\"<phoneme1>\", \"<phoneme2>\", ...],\n      \"ground_truth_phonemes\": [\"<ground_truth_phoneme1>\", \"<ground_truth_phoneme2>\", ...],\n      \"per\": <percentage_error>,\n      \"missed\": [],\n      \"added\": [],\n      \"substituted\": []\n    },\n    {\n      \"type\": \"deletion\",\n      \"predicted_word\": null,\n      \"ground_truth_word\": \"<ground_truth_word>\",\n      \"phonemes\": null,\n      \"ground_truth_phonemes\": null,\n      \"per\": null,\n      \"missed\": null,\n      \"added\": null,\n      \"substituted\": null,\n      \"error\": \"Word missing in prediction.\"\n    },\n    {\n      \"type\": \"substitution\",\n      \"predicted_word\": \"<predicted_word>\",\n      \"ground_truth_word\": \"<ground_truth_word>\",\n      \"phonemes\": [\"<phoneme1>\", \"<phoneme2>\", ...],\n      \"ground_truth_phonemes\": [\"<ground_truth_phoneme1>\", \"<ground_truth_phoneme2>\", ...],\n      \"per\": <percentage_error>,\n      \"missed\": [],\n      \"added\": [],\n      \"substituted\": [(\"<incorrect_phoneme>\", \"<correct_phoneme>\"), ...]\n    }\n  ],\n  \"highest_per_word\": {\n    \"type\": \"<type>\",\n    \"predicted_word\": \"<predicted_word>\",\n    \"ground_truth_word\": \"<ground_truth_word>\",\n    \"phonemes\": [\"<phoneme1>\", \"<phoneme2>\", ...],\n    \"ground_truth_phonemes\": [\"<ground_truth_phoneme1>\", \"<ground_truth_phoneme2>\", ...],\n    \"per\": <percentage_error>,\n    \"missed\": [],\n    \"added\": [],\n    \"substituted\": [(\"<incorrect_phoneme>\", \"<correct_phoneme>\")],\n    \"error\": \"<optional_error>\"\n  }\n}\nTask:\nTargeted Feedback:\n\nFocus on the highest error rate (provided by the 'highest_per_word' section of your input):\n\nIf the word with the highest error is a substitution, compare the student's substitution to the correct phoneme and explain in child-friendly terms why it is incorrect.\n\nIf the student omitted a word (indicated by a \"deletion\"), provide feedback on the missing word and explain how it affects the sentence.\n\nExplanation: Use simple, relatable language to describe the mistake, and give examples of words that share the correct pronunciation.\n\nContextualize the Mistake: Use context to explain how the correct phoneme is used in real words, ensuring that the student can hear and practice the difference.\n\nCompliment: Allways give the student a compliment before and after your constructive feedback, forming a compliment sandwich.\n\nNew Practice Sentence:\n\nIf the student made a mistake in pronunciation:\n\nCreate a new sentence that reinforces the corrected sound by including words that naturally use the corrected phoneme.\n\nKeep the sentence short (5-8 words) and engaging, helping the student practice the targeted sound.\n\nIf the student's pronunciation was strong:\n\nIntroduce a new sentence that targets a different phoneme to continue challenging the student. Make sure the sentence is still decodable and meaningful.\n\nExample Output (if a substitution error occurred):\n{\n  \"feedback\": \"Nice try! You said 'doge,' but it should sound like 'dog.' You made the 'g' sound too soft, like in 'judge.' Try saying 'dog' with a hard 'g'—like in 'go' or 'get.' Keep practicing and you'll get it!\",\n  \"sentence\": \"The dog is big and brown.\"\n}\nExample Output (if a deletion error occurred):\n{\n  \"feedback\": \"Oops, you missed the word 'the' in your sentence! It's an important word that helps make the sentence clear. Try saying, 'The quick brown fox jumped over the lazy dog.'\",\n  \"sentence\": \"The quick brown fox jumped over the lazy dog.\"\n}\nExample Output (if no significant mistake occurred):\n{\n  \"feedback\": \"Great job! Your pronunciation is getting clearer. Now, let’s try a new sound. Can you say this sentence and focus on making the 'oo' in 'moon' sound just right?\",\n  \"sentence\": \"The moon shines bright at night.\"\n}"
+                    "text": self.prompt
                     }
                 ]
             }
@@ -41,63 +53,83 @@ class PhonemeAssistant:
             output_format="mp3_44100_128",)
         return phonemes
 
-    def get_response(self, attempted_sentence:str, results:list, highest_per_word: pd.Series, problem_summary: dict) -> dict:
+    def extract_json(self, response_text):
+        try:
+            # Use regex to find the JSON object in the response
+            json_match = re.search(r"\{.*\}", response_text, re.DOTALL)
+            if json_match:
+                json_content = json_match.group(0)
+                return json.loads(json_content)
+            else:
+                raise ValueError("No JSON object found in the response.")
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Error decoding JSON: {e}")
+
+    def get_response(self, attempted_sentence:str, results:list, highest_per_word: pd.Series, problem_summary: dict, per_summary: dict) -> dict:
         # format the user input for our model
-        user_input = {
-            "attempted": attempted_sentence,
-            "pronunciation": results,
-            "highest_per_word": highest_per_word.to_dict(),
-            "problem_summary": problem_summary
-        }
+        # user_input = {
+        #     "attempted_sentence": attempted_sentence,
+        #     "per_summary": per_summary,
+        #     "problem_summary": problem_summary,
+        #     "pronunciation": results,
+        #     "highest_per_word": highest_per_word.to_dict(),
+        # }
+        user_input = {"role": "user", "content": (
+            "<<ATTEMPTED_SENTENCE>>\n"
+            f"{attempted_sentence}"
+            "<</ATTEMPTED_SENTENCE>>"
+            "<<PER_SUMMARY>>\n"
+            f"{per_summary}"
+            "<</PER_SUMMARY>>"
+            "<<PROBLEM_SUMMARY>>\n"
+            f"{problem_summary}\n"
+            "<</PROBLEM_SUMMARY>>\n\n"
+            "<<PRONUNCIATION>>\n"
+            f"{results}\n"
+            "<</PRONUNCIATION>>\n\n"
+            "<<HIGHEST_PER_WORD>>\n"
+            f"{highest_per_word.to_dict()}\n"
+            "<</HIGHEST_PER_WORD>>\n\n"
+            "<<INSTRUCTIONS>>\n"
+            "1. THINKING:\n"
+            "   a. Review phoneme_error_counts to find the most frequent mispronounced phoneme.\n"
+            "   b. If any count > 1, target that phoneme; else use highest_per_word substitution.\n"
+            f"   c. sentence_per = {per_summary}; if ≤0.2 use advanced words, else simpler words.\n"
+            "   d. Plan 10-20 word fully decodable sentence with varied phoneme positions, check the system prompt for the exact amount of words needed.\n"
+            "   e. Plan feedback: compliment, explain phoneme issue, compliment.\n"
+            "2. ANSWER in JSON using the earlier reasoning and the system prompt:\n"
+            "Make sure to explain all of your thinking by responding to each of these thinking questions before giving your response in json\n"
+            "<</INSTRUCTIONS>>"
+        )}
+
+        temp_messages = self.conversation_history[:]
+        temp_messages.append(user_input)
 
         # add the user input to the conversation history
         self.conversation_history.append({
             "role": "user",
-            "content": str(user_input)
+            "content": (f"{problem_summary}")
         })
 
         # get the response from the model
         response = self.client.chat.completions.create(
             model="gpt-4o-mini",
-            messages=self.conversation_history,
-            response_format={
-            "type": "json_schema",
-            "json_schema": {
-                "name": "response_schema",
-                "schema": {
-                "type": "object",
-                "required": [
-                    "feedback",
-                    "sentence"
-                ],
-                "properties": {
-                    "feedback": {
-                    "type": "string",
-                    "description": "Specific feedback provided to the student to help them improve their reading pronunciation."
-                    },
-                    "sentence": {
-                    "type": "string",
-                    "description": "A decodable sentence based on the mistakes made in the student's pronunciation."
-                    }
-                },
-                "additionalProperties": False
-                },
-                "strict": True
-            }
-            },
+            messages=temp_messages,
             temperature=1,
             max_completion_tokens=2048,
             top_p=1,
             frequency_penalty=0,
-            presence_penalty=0
+            presence_penalty=0,
+            stop=["</ANSWER>"]
         )
         
-        model_response = response.choices[0].message.content
+        model_response = response.choices[0].message.content.strip()
         self.conversation_history.append({
             "role": "assistant",
             "content": model_response})
+        print(model_response)
         
-        return model_response
+        return self.extract_json(model_response)
     
     # def get_dataset_index_and_get_response(self):
 
@@ -108,21 +140,24 @@ class PhonemeAssistant:
                 results, ground_truth_phonemes = record_and_process_pronunciation(
                     attempted_sentence,
                     phoneme_extraction_model=self.phoneme_extractor,
-                    word_extraction_model=self.word_extractor
+                    word_extraction_model=self.word_extractor,
                 )
                 recorded = True
             except ValueError:
                 print("No audio detected, you must speak again")
 
         
-        df, highest_per_word, problem_summary = analyze_results(results)
+        df, highest_per_word, problem_summary, per_summary = analyze_results(results)
+
         if verbose:
             print("Dataframe: ")
             print(df)
-            print("Results")
+            print(f"Results: \n{results}")
             print(f"Highest error word: \n{ highest_per_word}")
+            print(f"Problem Summary \n{problem_summary}")
+            print(f"PER Summary \n{per_summary}")
 
-        model_response = self.get_response(attempted_sentence=attempted_sentence, results=results, highest_per_word=highest_per_word, problem_summary=problem_summary)
+        model_response = self.get_response(attempted_sentence=attempted_sentence, results=results, highest_per_word=highest_per_word, problem_summary=problem_summary, per_summary=per_summary)
         return model_response, df, highest_per_word, problem_summary
     
     def feedback_to_audio(self, feedback: str):
@@ -133,6 +168,11 @@ class PhonemeAssistant:
 
 # Default running behavior
 if __name__ == "__main__":
+
+    # DEFAULT BEHAVIOR:
+    # - MAKE MODEL
+    # - GETS SENTENCE FROM USER
+    # - LOOP
 
     # AI models
     phoneme_assistant = PhonemeAssistant()
@@ -145,7 +185,7 @@ if __name__ == "__main__":
     while True:
         output,_,_,_ = phoneme_assistant.record_audio_and_get_response(attempted_sentence, verbose=True)
 
-        output_json = json.loads(output)
+        output_json = output
         print("\nFeedback: ")
         print(output_json['feedback'])
 

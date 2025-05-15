@@ -298,7 +298,7 @@ def analyze_results(results: list[dict]) -> tuple[pd.DataFrame, float, dict]:
         results (list[dict]): List of word-level results containing phoneme-level details.
 
     Returns:
-        tuple[pd.DataFrame, float, dict]: DataFrame of word-level results, sentence-level PER, and aggregated error counts.
+        tuple[pd.DataFrame, pd.Series, dict, dict]: DataFrame of word-level results, highest phoneme error rate word, problems, and sentence per 
     """
     df = pd.DataFrame(results)
     highest_per = df.sort_values("per", ascending=False).iloc[0]
@@ -316,7 +316,7 @@ def analyze_results(results: list[dict]) -> tuple[pd.DataFrame, float, dict]:
     sentence_per = total_errors / total_phonemes if total_phonemes > 0 else 0.0
 
     # Return sentence-level PER along with existing results
-    return df, sentence_per, {
+    return df, highest_per, problem_summary, {
         "total_phonemes": total_phonemes,
         "total_errors": total_errors,
         "sentence_per": sentence_per,
