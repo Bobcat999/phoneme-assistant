@@ -95,7 +95,7 @@ class PhonemeAssistant:
             "   a. Review phoneme_error_counts to find the most frequent mispronounced phoneme.\n"
             "   b. If any count > 1, target that phoneme; else use highest_per_word substitution.\n"
             f"   c. sentence_per = {per_summary}; if ≤0.2 use advanced words, else simpler words.\n"
-            "   d. Plan 10-20 word fully decodable sentence with varied phoneme positions, check the system prompt for the exact amount of words needed.\n"
+            "   d. Plan 20-30 word fully decodable sentence with varied phoneme positions, check the system prompt for the exact amount of words needed.\n"
             "   e. Plan feedback: compliment, explain phoneme issue, compliment.\n"
             "2. ANSWER in JSON using the earlier reasoning and the system prompt:\n"
             "Make sure to explain all of your thinking by responding to each of these thinking questions before giving your response in json\n"
@@ -133,7 +133,7 @@ class PhonemeAssistant:
     
     # def get_dataset_index_and_get_response(self):
 
-    def record_audio_and_get_response(self, attempted_sentence, verbose=False):
+    def record_audio_and_get_response(self, attempted_sentence, verbose=False, status_callback = None):
         recorded = False
         while not recorded:
             try:
@@ -141,14 +141,18 @@ class PhonemeAssistant:
                     attempted_sentence,
                     phoneme_extraction_model=self.phoneme_extractor,
                     word_extraction_model=self.word_extractor,
+                    status_callback=status_callback
                 )
                 recorded = True
             except ValueError:
                 print("No audio detected, you must speak again")
-
+        
+        if status_callback:
+            status_callback("Analyzing results...")
         
         df, highest_per_word, problem_summary, per_summary = analyze_results(results)
 
+        
         if verbose:
             print("Dataframe: ")
             print(df)
@@ -157,8 +161,12 @@ class PhonemeAssistant:
             print(f"Problem Summary \n{problem_summary}")
             print(f"PER Summary \n{per_summary}")
 
+        if status_callback:
+            status_callback("Crafting feedback...")
+        
         model_response = self.get_response(attempted_sentence=attempted_sentence, results=results, highest_per_word=highest_per_word, problem_summary=problem_summary, per_summary=per_summary)
-        return model_response, df, highest_per_word, problem_summary
+
+        return model_response, df, highest_per_word, problem_summary, per_summary
     
     def feedback_to_audio(self, feedback: str):
         return self.tts.getAudio(feedback, playAudio=True)
@@ -183,7 +191,7 @@ if __name__ == "__main__":
 
     # user loop
     while True:
-        output,_,_,_ = phoneme_assistant.record_audio_and_get_response(attempted_sentence, verbose=True)
+        output,_,_,_,_ = phoneme_assistant.record_audio_and_get_response(attempted_sentence, verbose=True)
 
         output_json = output
         print("\nFeedback: ")

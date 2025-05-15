@@ -10,7 +10,7 @@ import queue
 import time
 import webrtcvad
 
-def run_vad(output_file="temp_audio/output.wav", fs=16000, chunk_duration=0.03, vad_mode=3, silence_threshold=200):
+def run_vad(output_file="temp_audio/output.wav", fs=16000, chunk_duration=0.03, vad_mode=3, silence_threshold=200, status_callback=None):
     chunk_size = int(fs * chunk_duration)
     audio_queue = queue.Queue()
     stop_event = threading.Event()
@@ -65,12 +65,14 @@ def run_vad(output_file="temp_audio/output.wav", fs=16000, chunk_duration=0.03, 
     recording_thread.start()
     vad_thread.start()
 
+    status_callback("Recording...")
+
     recording_thread.join()
     vad_thread.join()
 
 
 #Combining everything into a single function
-def record_and_process_pronunciation(text, phoneme_extraction_model=None, use_previous_recording=False, word_extraction_model=None):
+def record_and_process_pronunciation(text, phoneme_extraction_model=None, use_previous_recording=False, word_extraction_model=None, status_callback = None):
     """Does all of the work for recording and processing the pronunciation of phonemes
 
     Args:
@@ -83,11 +85,17 @@ def record_and_process_pronunciation(text, phoneme_extraction_model=None, use_pr
         _type_: _description_
     """
     if not use_previous_recording:
-        run_vad("temp_audio/output.wav")
+        run_vad("temp_audio/output.wav", status_callback=status_callback)
+
+    if status_callback:
+        status_callback("Translating to phoneme...")
 
     ground_truth_phonemes = grapheme_to_phoneme(text)
 
     audio_array, sr = librosa.load("temp_audio/output.wav", sr=16000)
+
+    if status_callback:
+        status_callback("Processing audio...")
     output = process_audio_array(ground_truth_phonemes=ground_truth_phonemes, audio_array=audio_array, sampling_rate=16000, phoneme_extraction_model=phoneme_extraction_model, word_extraction_model=word_extraction_model) 
     return output, ground_truth_phonemes
 

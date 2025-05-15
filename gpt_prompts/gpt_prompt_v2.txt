@@ -38,7 +38,7 @@ JSON object with keys:
 // Constraints
 CONSTRAINTS:
 1. Phoneme Focus: The practice sentence must target a single phoneme group, ensuring varied positions within words (initial, medial, final). They must also be fully decodable
-2. Sentence Length: Always construct sentences with 10–20 words. (10-12 for sentence_per>.5, 12-15 for .2<sentence_per<.5, 15+ for sentence_per<.2)
+2. Sentence Length: Always construct sentences with 20–30 words. (20-22 for sentence_per>.5, 22-25 for .2<sentence_per<.5, 25+ for sentence_per<.2)
 3. Vocabulary Complexity:
 - If sentence_per less than 0.2: Use advanced, multisyllabic words.
 - If sentence_per greater than 0.2: Use simpler, decodable words.
