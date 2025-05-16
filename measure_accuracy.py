@@ -5,6 +5,7 @@ from word_extractor import WordExtractor
 from process_audio import process_audio_array, analyze_results
 from grapheme_to_phoneme import grapheme_to_phoneme
 from evaluation.accuracy_metrics import compute_phoneme_error_rate
+import eng_to_ipa as g2p
 import pandas as pd
 import math
 import matplotlib.pyplot as plt  # changed
@@ -24,13 +25,13 @@ class MeasureAccuracy:
         self.phoneme_model = phoneme_model
         self.word_model = word_model
 
-    def compare_indexes(self, index_range: range, merged_list=None) -> tuple[pd.DataFrame, float, float, float]:
+    def compare_indexes(self, index_range: range, merged_list=None) -> tuple[pd.DataFrame, float, float, float, float]:
         if merged_list is None:
             all_results = []
             calc_times = []
             for idx in index_range:
                 try:
-                    df, _, calc_time = self.compare_index(idx)
+                    df, calc_time = self.compare_index(idx)
                     all_results.append(df)
                     calc_times.append(calc_time)
                 except Exception as e:
@@ -51,7 +52,7 @@ class MeasureAccuracy:
                     print(e)
 
             if not all_results:
-                return pd.DataFrame(), 0.0, 0.0, 0.0
+                return pd.DataFrame(), 0.0, 0.0, 0.0, 0.0
 
             merged = pd.concat(all_results, ignore_index=True)
         else:
@@ -99,49 +100,29 @@ class MeasureAccuracy:
         df, _, _, per_data = analyze_results(results)
 
         sentence_per = per_data["sentence_per"]
-
-        # # construct our output dataframe
-        # results = []
-
-        # # compare our resulting per per word to that of the database
-        # word_info = [{ #get all of the data for each word
-        #     "word": w,
-        #     "per": compute_phoneme_error_rate(o,a)
-        # } for w,o,a in zip(item["original_sentence"].split(), item["original_phonemes"].split(), item["altered_phonemes"].split())]
-
-        # per = []
-        # if word_info:
-        #     for i, w in enumerate(word_info):
-        #         ground_truth_per = w["per"]
-        #         print("Word info:", w)
-        #         print("Model info:", df.iloc[i])
-        #         model_per = df.iloc[i]["per"]
-        #         results.append({
-        #             "word": w["word"],
-        #             "model_per": model_per,
-        #             "ground_truth_per": ground_truth_per,
-        #         })
-
-        # # turn results into a dataframe
-        # results = pd.DataFrame(results)
-
-        #rethink validation strat
-
-        #validation done on per from sentence
         ground_truth_per = item["per"]
 
+        # calculate the prediction to the actual error
+        altered_text = item["altered_sentence"]
+        altered_ground_truth = list(g2p.convert(altered_text).replace(" ",""))
+        print("altered gt:", altered_ground_truth)
+        predicted_phonemes = []
+        for result in results:
+            predicted_phonemes += result["phonemes"]
+        print("pred phonemes:", predicted_phonemes)
+        pred_to_actual_error = compute_phoneme_error_rate(altered_ground_truth, predicted_phonemes)
+
         # # figure out correlation coef of accuracy and per
-        # correlation_coefficient = self.correlation_coefficient(results["model_per"].to_list(), results["ground_truth_per"].to_list())
-        correlation_coefficient = 0.0
         end_time = time.time()  # end timing
         calculation_time = end_time - start_time
 
         results = pd.DataFrame({
             "model_per": [float(sentence_per)],
-            "ground_truth_per": [float(ground_truth_per)]
+            "ground_truth_per": [float(ground_truth_per)],
+            "pred_to_actual_error": [float(pred_to_actual_error)]
         })
 
-        return results, correlation_coefficient, calculation_time
+        return results, calculation_time
 
     def correlation_coefficient(self, x: list, y: list) -> float:
         """Finds the correlation coefficient between two same sized lists
@@ -203,6 +184,25 @@ plt.ylabel("Model PER")
 plt.xlim(0, 1)  # Ensure the x-axis goes from 0 to 1
 plt.legend()
 plt.title("Ground Truth PER vs Model PER")
+plt.show()
+
+# Filter out invalid data for ground_truth_per vs model_per
+valid_data = results[0].dropna(subset=["pred_to_actual_error"])
+x = range(0, len(valid_data))
+y = valid_data["pred_to_actual_error"]
+
+plt.figure(figsize=(10, 6))  # Larger plot for better visibility
+plt.scatter(x, y, label="Data Points")
+coefficients = np.polyfit(x, y, 1)  # Linear fit (degree 1)
+line = np.poly1d(coefficients)
+
+# Use the actual range of indices for the line
+x_range = np.linspace(0, len(valid_data)-1, 100)
+plt.plot(x_range, line(x_range), color="red", label="Best Fit Line")
+plt.xlabel("Validation index")
+plt.ylabel("Prediction to Actual Error")
+plt.legend()
+plt.title("Prediction to Actual Error by Sample Index")
 plt.show()
 
 print(f"Average Calculation time: {results[4]}")
