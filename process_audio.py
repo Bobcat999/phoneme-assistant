@@ -197,8 +197,9 @@ def process_audio_array(ground_truth_phonemes, audio_array, sampling_rate=16000,
     # regroup the phonemes to reflect the words that were spoken
     flattened_phoneme_predictions = [item for sublist in phoneme_predictions for item in sublist]
     predicted_words_phonemes = g2p(" ".join(predicted_words)) # take the words our model thinks we said and get the phonemes for them
-    alignment = align_phonemes_to_words(flattened_phoneme_predictions, predicted_words_phonemes)
-    phoneme_predictions = [pred_phonemes for _, pred_phonemes,_ in alignment]
+    if(len(phoneme_predictions) != len(predicted_words_phonemes)):
+        alignment = align_phonemes_to_words(flattened_phoneme_predictions, predicted_words_phonemes)
+        phoneme_predictions = [pred_phonemes for _, pred_phonemes,_ in alignment]
     print("aligned phoneme predictions: ", phoneme_predictions)
 
 
@@ -333,7 +334,7 @@ if __name__ == "__main__":
 
     # Load the audio file
     # audio, sampling_rate = librosa.load("output.wav", sr=16000)
-    # run_vad()
+    run_vad()
     audio, sampling_rate = librosa.load("./temp_audio/output.wav", sr=16000)
 
 
@@ -343,14 +344,17 @@ if __name__ == "__main__":
     # Process the audio
     results = process_audio_array(ground_truth_phonemes, audio, sampling_rate, phoneme_extraction_model=extractor)
 
+    # Print the results
+    print("Results:")
+    print(results)
+
 
     for result in results:
         print(result)
     print()
-    df, sentence_per, summary = analyze_results(results)
+    df, highest_per, problem_summary, per_summary = analyze_results(results)
     print(df)
-    print(f"Sentence PER: {sentence_per:.4f}")
-    print(summary)
+    print(f"Sentence PER: {per_summary:.4f}")
 
-    print({"pronunciation": results, "highest_per_word": summary})
-    print("Most Common Problems:", summary["problem_summary"])
+    print({"pronunciation": results, "highest_per_word": highest_per, "problem_summary": problem_summary})
+    print("Most Common Problems:", problem_summary)

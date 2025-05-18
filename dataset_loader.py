@@ -35,7 +35,7 @@ class SpeechDatasetLoader:
         self.train = self.train.filter(
             lambda example: calculate_ground_truth_per(example) != 0.0 and example["accuracy"] != 10
         )
-
+    
     def get_dataset(self):
         return self.train, self.test
     

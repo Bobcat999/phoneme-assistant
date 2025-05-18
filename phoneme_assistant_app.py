@@ -228,7 +228,7 @@ class PhonemeAssistantApp:
             new_sentence = output_json.get("sentence", "No sentence available")
             
             # Format feedback with better styling
-            formatted_text = f"FEEDBACK:\n{feedback_text}\n\nCORRECT SENTENCE:\n{new_sentence}"
+            formatted_text = f"FEEDBACK:\n{feedback_text}\n\nNEXT SENTENCE:\n{new_sentence}"
             self.output_label.config(text=formatted_text)
             
             # Switch to the feedback tab

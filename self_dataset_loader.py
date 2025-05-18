@@ -49,7 +49,7 @@ class SelfSpeechDatasetLoader:
 
     def get_audio_bytes(self, index):
         """Optional: Load raw bytes of the .wav file."""
-        audio,sr = librosa.load(self.data[index]["audio_path"])
+        audio,sr = librosa.load(self.data[index]["audio_path"], sr=16000)
         return audio
 
     def get_audio_duration(self, index):

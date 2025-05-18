@@ -136,41 +136,70 @@ class PhonemeAssistant:
     
     # def get_dataset_index_and_get_response(self):
 
-    def record_audio_and_get_response(self, attempted_sentence, verbose=False, status_callback = None):
-        recorded = False
-        while not recorded:
-            try:
-                results, ground_truth_phonemes = record_and_process_pronunciation(
-                    attempted_sentence,
-                    phoneme_extraction_model=self.phoneme_extractor,
-                    word_extraction_model=self.word_extractor,
-                    status_callback=status_callback,
-                    use_previous_recording=True
-                )
-                recorded = True
-            except ValueError:
-                print("No audio detected, you must speak again")
-        
+    def record_audio_and_get_response(self, attempted_sentence, verbose=False, status_callback=None, audio_array=None):
+        """Record or process specific audio and get the model's response.
+
+        Args:
+            attempted_sentence (str): The sentence to analyze.
+            verbose (bool, optional): Whether to print detailed logs. Defaults to False.
+            status_callback (callable, optional): Callback for status updates. Defaults to None.
+            audio_path (str, optional): Path to a specific audio file to process. Defaults to None.
+
+        Returns:
+            tuple: Model response, DataFrame, highest_per_word, problem_summary, per_summary.
+        """
+        if audio_array is not None:
+            # Use the provided audio file
+            if status_callback:
+                status_callback("Loading audio from file...")
+            results, ground_truth_phonemes = record_and_process_pronunciation(
+                attempted_sentence,
+                phoneme_extraction_model=self.phoneme_extractor,
+                word_extraction_model=self.word_extractor,
+                audio_array=audio_array,
+                status_callback=status_callback,
+            )
+        else:
+            # Record audio
+            recorded = False
+            while not recorded:
+                try:
+                    results, ground_truth_phonemes = record_and_process_pronunciation(
+                        attempted_sentence,
+                        phoneme_extraction_model=self.phoneme_extractor,
+                        word_extraction_model=self.word_extractor,
+                        status_callback=status_callback,
+                    )
+                    recorded = True
+                except ValueError:
+                    print("No audio detected, you must speak again")
+
         if status_callback:
             status_callback("Analyzing results...")
-        
+
         df, highest_per_word, problem_summary, per_summary = analyze_results(results)
 
-        
         if verbose:
             print("Dataframe: ")
             print(df)
             print(f"Results: \n{results}")
-            print(f"Highest error word: \n{ highest_per_word}")
+            print(f"Highest error word: \n{highest_per_word}")
             print(f"Problem Summary \n{problem_summary}")
             print(f"PER Summary \n{per_summary}")
 
         if status_callback:
             status_callback("Crafting feedback...")
-        
-        model_response = self.get_response(attempted_sentence=attempted_sentence, results=results, highest_per_word=highest_per_word, problem_summary=problem_summary, per_summary=per_summary)
+
+        model_response = self.get_response(
+            attempted_sentence=attempted_sentence,
+            results=results,
+            highest_per_word=highest_per_word,
+            problem_summary=problem_summary,
+            per_summary=per_summary,
+        )
 
         return model_response, df, highest_per_word, problem_summary, per_summary
+
     
     def feedback_to_audio(self, feedback: str, save: bool = False, save_path: str = "temp_audio/feedback.wav"):
         """Generate feedback audio using Elevenlabs TTS service

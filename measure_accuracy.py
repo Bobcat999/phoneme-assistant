@@ -155,6 +155,8 @@ class MeasureAccuracy:
 # print("correlation coef:", correlation_coefficient)
 #%%
 import numpy as np
+import torch
+torch.device("cuda" if torch.cuda.is_available() else "cpu")
 accuracy = MeasureAccuracy(dataset=loader, phoneme_model=phoneme_model, word_model=word_model)
 results = accuracy.compare_indexes(map(int,list(np.random.randint(1,len(loader),50))))
 #%%
@@ -165,6 +167,7 @@ print("mean absolute error", results[1])
 
 # Import necessary libraries
 import numpy as np
+
 
 # Filter out invalid data for ground_truth_per vs model_per
 valid_data = results[0].dropna(subset=["ground_truth_per", "model_per"])
@@ -193,16 +196,16 @@ y = valid_data["pred_to_actual_error"]
 
 plt.figure(figsize=(10, 6))  # Larger plot for better visibility
 plt.scatter(x, y, label="Data Points")
-coefficients = np.polyfit(x, y, 1)  # Linear fit (degree 1)
-line = np.poly1d(coefficients)
+avg = np.average(y)
 
 # Use the actual range of indices for the line
 x_range = np.linspace(0, len(valid_data)-1, 100)
-plt.plot(x_range, line(x_range), color="red", label="Best Fit Line")
-plt.xlabel("Validation index")
+plt.plot(x_range, np.full_like(x_range, avg), color="red", label="Average Line")  # Average line
+plt.xlabel("Sample index")
 plt.ylabel("Prediction to Actual Error")
 plt.legend()
 plt.title("Prediction to Actual Error by Sample Index")
+plt.ylim(0, 1)  # Ensure the y-axis goes from 0 to 1
 plt.show()
 
 print(f"Average Calculation time: {results[4]}")

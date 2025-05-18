@@ -50,6 +50,7 @@ class RecorderApp:
         self.record_button = tk.Button(self.root, text="Record Selected", command=self.start_recording_thread)
         self.record_button.grid(row=6, column=0, columnspan=2)
 
+
     def start_recording_thread(self):
         recording_thread = threading.Thread(target=self.record_selected_key)
         recording_thread.start()
