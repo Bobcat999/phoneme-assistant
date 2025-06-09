@@ -1,3 +1,4 @@
+#%%
 import torch
 import librosa
 from transformers import Wav2Vec2Processor, Wav2Vec2ForCTC
@@ -56,12 +57,12 @@ if __name__ == '__main__':
     from audio_recording import record_and_process_pronunciation
 
     # Load the audio file
-    audio, sampling_rate = librosa.load("output.wav", sr=16000)
+    audio, sampling_rate = librosa.load("./temp_audio/output.wav", sr=16000)
     # Create the phoneme extractor
     extractor = WordExtractor()
 
     # Extract the phonemes
-    phonemes = extractor.extract_phoneme(audio, sampling_rate)
+    phonemes = extractor.extract_words(audio, sampling_rate)
     ground_truth_phonemes = grapheme_to_phoneme("zero three five one")
     # phonemes, ground_truth_phonemes = record_and_process_pronunciation("the quick brown fox jumped over the lazy dog", extractor)
 

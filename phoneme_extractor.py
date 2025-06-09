@@ -15,7 +15,7 @@ def default_model_output_processing(transcription):
     return filtered_transcription
 
 class PhonemeExtractor:
-    def __init__(self, model_name =  "speech31/wav2vec2-large-TIMIT-IPA", model_output_processing=default_model_output_processing):
+    def __init__(self, model_name = "speech31/wav2vec2-large-TIMIT-IPA", model_output_processing=default_model_output_processing):
         # Replace with your pre-trained phoneme model identifier from Hugging Face
         # self.model_name = "speech31/wav2vec2-large-english-TIMIT-phoneme_v3"
         self.model_name = model_name
