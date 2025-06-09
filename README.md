@@ -1,5 +1,6 @@
 # Phoneme Assistant
 Currently, this is just a development repository meant for experimenting
+
 If you would like to test the phoneme assistant MVP follow these steps:
 1. Clone the repository
 2. Create a .env file containing the following content:
